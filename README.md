@@ -68,7 +68,9 @@ $ docker-compose up -d
 
 Close service worker at `*.twitter.com`:
 
-1. Add `||twitter.com/sw.js$script,domain=twitter.com` to uBlock Origin
+1. Add following rules to uBlock Origin
+   - `||twitter.com/push_service_worker.js$script,domain=twitter.com`
+   - `||twitter.com/sw.js$script,domain=twitter.com`
 2. Unregister service worker of twitter
    1. Firefox:
       1. Go [about:serviceworkers](about:serviceworkers)
