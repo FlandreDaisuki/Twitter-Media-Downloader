@@ -1,0 +1,17 @@
+version: "3.2"
+
+services:
+  twitter-video-dl:
+    build: .
+    image: flandre/twitter-video-dl
+    container_name: twitter-video-dl
+    ports:
+      - 10001:10001
+    volumes:
+      - /your/host/download/path:/download # change to your download path
+    environment:
+      - TZ=Asia/Taipei
+      - LANG=zh_TW.UTF-8
+      - PORT=10001
+      - VIDEO_NAMING_PATTERN={userId}@twitter-{tweetId}
+    restart: unless-stopped
