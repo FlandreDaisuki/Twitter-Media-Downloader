@@ -72,10 +72,10 @@ Close service worker at `*.twitter.com`:
    - `||twitter.com/push_service_worker.js$script,domain=twitter.com`
    - `||twitter.com/sw.js$script,domain=twitter.com`
 2. Unregister service worker of twitter
-   1. Firefox:
+   - Firefox:
       1. Go [about:serviceworkers](about:serviceworkers)
       2. Find `*.twitter.com` and unregister it
-   2. Chromium-based:
+   - Chromium-based:
       1. Go [chrome://serviceworker-internals/](chrome://serviceworker-internals/)
       2. Find `*.twitter.com` and unregister it
 
