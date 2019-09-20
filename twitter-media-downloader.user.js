@@ -2,7 +2,7 @@
 // @name         Twitter Media Downloader
 // @namespace    https://github.com/FlandreDaisuki
 // @description  Close service worker at twitter.com and enjoy it.
-// @version      0.1
+// @version      0.1.1
 // @author       FlandreDaisuki
 // @match        https://tweetdeck.twitter.com/
 // @match        https://twitter.com/*
@@ -291,7 +291,7 @@ function twitterVideoSetup() {
 }
 
 function tweetdeckSetup() {
-  sentinel.on('#open-modal', () => {
+  sentinel.on('.med-origlink', (origlinkEl) => {
     const mediaImg = $('.media-img');
     if (mediaImg) {
       const a = document.createElement('a');
@@ -303,13 +303,7 @@ function tweetdeckSetup() {
         downloadImage(mediaImg, $('#open-modal time > a').href);
       };
 
-      const oldBtn = $('#TMD-photo-download-btn');
-      if (oldBtn) {
-        oldBtn.replaceWith(a);
-      }
-      else {
-        $('.med-origlink').insertAdjacentElement('afterend', a);
-      }
+      origlinkEl.insertAdjacentElement('afterend', a);
     }
   });
 }
