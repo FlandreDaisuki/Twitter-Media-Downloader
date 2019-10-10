@@ -2,16 +2,18 @@
 // @name         Twitter Media Downloader
 // @namespace    https://github.com/FlandreDaisuki
 // @description  Close service worker at twitter.com and enjoy it.
-// @version      0.1.1
+// @version      0.2.0
 // @author       FlandreDaisuki
 // @match        https://tweetdeck.twitter.com/
 // @match        https://twitter.com/*
 // @match        https://mobile.twitter.com/*
 // @require      https://unpkg.com/sentinel-js@0.0.5/dist/sentinel.js
+// @resource     dialog.css https://raw.githubusercontent.com/GoogleChrome/dialog-polyfill/master/dist/dialog-polyfill.css
 // @license      MIT
 // @noframes
 // @grant        GM_download
 // @grant        GM_xmlhttpRequest
+// @grant        GM_getResourceText
 // @connect      127.0.0.1
 // ==/UserScript==
 
@@ -104,6 +106,7 @@ const downloadImage = (imgEl, tweetURL) => {
 // Entry Point
 if (location.host === 'twitter.com' || location.host === 'mobile.twitter.com') {
   applyStyle(TWITTER_CSS);
+  applyStyle(GM_getResourceText('dialog.css'));
   twitterImageSetup();
   twitterVideoSetup();
 }
@@ -198,7 +201,7 @@ function twitterImageSetup() {
       const isGIF = isVideo && currentListItem.querySelector('video[src^="https"]');
 
       const groupRoot = $('.r-g6jmlv [role="group"]');
-      [...groupRoot.querySelectorAll('[id^="TMD-carousel-"]')].map(btn => btn.remove());
+      [...groupRoot.querySelectorAll('[id^="TMD-carousel-"]')].map((btn) => btn.remove());
       if (isVideo) {
         groupRoot.insertAdjacentElement('afterbegin', createCarouselVideoDownloadBtn(isGIF));
       }
@@ -212,15 +215,24 @@ function twitterImageSetup() {
 }
 
 function twitterVideoSetup() {
+  const dialog = document.createElement('dialog');
+  dialog.className = 'fixed';
+  document.body.appendChild(dialog);
 
   const bindClickThenReturn = (btn, href) => {
     btn.addEventListener('click', async() => {
       const resp = await GM_fetch(`${SERVER_ORIGIN}/_?${href}`).catch(console.error);
       const result = JSON.parse(resp.responseText);
       if (result.ok) {
+        dialog.textContent = '已成功下載 ' + result.dest;
         console.log('已成功下載', result.dest);
+        dialog.setAttribute('open', 'open');
+        setTimeout(() => {
+          dialog.removeAttribute('open');
+        }, 3000);
       }
       else {
+        dialog.textContent = '下載失敗';
         console.error('下載失敗', result.reason);
       }
     });
@@ -287,7 +299,6 @@ function twitterVideoSetup() {
       tweetGroupEl.insertAdjacentElement('afterbegin', btn);
     }
   });
-
 }
 
 function tweetdeckSetup() {
