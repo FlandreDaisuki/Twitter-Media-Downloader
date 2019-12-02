@@ -2,7 +2,7 @@
 // @name         Twitter Media Downloader
 // @namespace    https://github.com/FlandreDaisuki
 // @description  Close service worker at twitter.com and enjoy it.
-// @version      0.2.0
+// @version      0.2.1
 // @author       FlandreDaisuki
 // @match        https://tweetdeck.twitter.com/
 // @match        https://twitter.com/*
@@ -84,8 +84,8 @@ const GM_fetch = (url, details = {}) => {
 };
 
 const isBoundingRectShows = (el) => {
-  const { x, width } = el.getBoundingClientRect();
-  return x >= 0 && x <= width;
+  const { x } = el.getBoundingClientRect();
+  return x >= 0 && x <= window.innerWidth;
 };
 
 const downloadImage = (imgEl, tweetURL) => {
@@ -140,7 +140,8 @@ function twitterImageSetup() {
   </div>
 </div>`;
 
-    root.addEventListener('click', () => {
+    root.addEventListener('click', (ev) => {
+      ev.stopPropagation();
       $$('.r-11yh6sk.r-buy8e9 img.css-9pa8cd')
         .filter(isBoundingRectShows)
         .map((imgEl) => downloadImage(imgEl, location.href));
