@@ -13,7 +13,7 @@ const VIDEO_NAMING_PATTERN = process.env.VIDEO_NAMING_PATTERN || '{userId}@twitt
 const server = http.createServer((req, res) => {
   req.resume().on('end', () => {
     const tweetURL = url.parse(req.url).query;
-    const [userId, tweetId] = [...[...tweetURL.matchAll(/.*\/(.*)\/status\/(\d+).*/)][0]].slice(1);
+    const [userId, tweetId] = [...[...tweetURL.matchAll(/.*\/(.*)\/status\/(\d+).*/g)][0]].slice(1);
     const outputFileName = VIDEO_NAMING_PATTERN
       .replace('{userId}', userId)
       .replace('{tweetId}', tweetId)
@@ -30,7 +30,7 @@ const server = http.createServer((req, res) => {
     if (stdout) {
       const msg = stdout
         .split('\n')
-        .filter(line => String(line).includes('[download] Destination'))[0];
+        .filter((line) => String(line).includes('[download] Destination'))[0];
 
       console.log(msg);
     }
@@ -55,7 +55,7 @@ server.listen(PORT, HOSTNAME, () => {
   console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
   console.log();
   console.log('Usage:');
-  console.log(`  GET http://${HOSTNAME}:${PORT}/_?https://twitter.com/{userId}/status/{tweetId}`);
+  console.log(`  GET http://${HOSTNAME}:${PORT}/?https://twitter.com/{userId}/status/{tweetId}`);
   console.log(`  download as '${VIDEO_NAMING_PATTERN}.mp4'`);
   console.log();
   console.log('Destination:');
