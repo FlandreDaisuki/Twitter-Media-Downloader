@@ -1,41 +1,15 @@
 {
     "cSpell.ignoreWords": [
-        "a",
-        "awozwy",
-        "axxi",
-        "bcqeeo",
-        "bztko",
-        "cpok",
-        "dbjc",
-        "downloadlink",
-        "dtai",
-        "flaglink",
-        "ftll",
-        "g",
-        "jmlv",
-        "jwli",
-        "koalj",
-        "lrvibr",
-        "mdbhws",
-        "mediaembed",
-        "n",
-        "o",
-        "origlink",
-        "p",
-        "qvutc",
-        "qxfft",
-        "r",
-        "rjfia",
-        "sdzlij",
-        "t",
-        "twimg",
-        "xoduu",
-        "ynqc",
-        "z",
-        "zchlnj"
     ],
     "cSpell.words": [
-        "listitem"
+        "listitem",
+        "twimg"
+    ],
+    "cSpell.ignoreRegExpList": [
+        "[\\b\\W]r-\\w+",
+        "[\\b\\W]js-\\w+",
+        "[\\b\\W]css-\\w+",
+        "[\\b\\W]med-\\w+"
     ],
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true

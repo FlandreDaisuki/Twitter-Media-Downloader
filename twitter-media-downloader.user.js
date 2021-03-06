@@ -303,7 +303,7 @@ function twitterVideoSetup() {
 }
 
 function tweetdeckSetup() {
-  sentinel.on('.med-origlink', (origlinkEl) => {
+  sentinel.on('.med-origlink', (origLinkEl) => {
     const mediaImg = $('.media-img');
     if (mediaImg) {
       const a = document.createElement('a');
@@ -315,7 +315,7 @@ function tweetdeckSetup() {
         downloadImage(mediaImg, $('#open-modal time > a').href);
       };
 
-      origlinkEl.insertAdjacentElement('afterend', a);
+      origLinkEl.insertAdjacentElement('afterend', a);
     }
   });
 }
