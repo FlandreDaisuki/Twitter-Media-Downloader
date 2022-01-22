@@ -2,7 +2,7 @@
 // @name         Tweetdeck Media Downloader
 // @namespace    https://github.com/FlandreDaisuki
 // @description  Enjoy it.
-// @version      0.4.1
+// @version      0.4.2
 // @author       FlandreDaisuki
 // @match        https://tweetdeck.twitter.com/*
 // @match        https://twitter.com/*
@@ -163,7 +163,8 @@ if (hostname === 'twitter.com') {
     const downloadBtnEl = getElByHTML(downloadBtnHTML);
     tweetActionGroupEl.appendChild(downloadBtnEl);
     downloadBtnEl.onclick = () => {
-      const href = articleEl.querySelector('a[aria-label]')?.href;
+      const href = articleEl.querySelector('a[aria-label]')?.href ??
+        articleEl.querySelector('[dir="auto"] > a:not([target])')?.href;
       if (href) {
         downloadVideo(href);
       } else {
@@ -202,7 +203,8 @@ if (hostname === 'twitter.com') {
     tweetActionGroupEl.appendChild(downloadBtnEl);
 
     downloadBtnEl.onclick = () => {
-      const href = articleEl.querySelector('a[aria-label]')?.href;
+      const href = articleEl.querySelector('a[aria-label]')?.href ??
+        articleEl.querySelector('[dir="auto"] > a:not([target])')?.href;
       if (href) {
         downloadImage(imageEl, href);
       } else {
