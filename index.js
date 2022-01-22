@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-const url = require('url');
 const http = require('http');
 const path = require('path');
 const { spawnSync } = require('child_process');
@@ -12,7 +11,7 @@ const VIDEO_NAMING_PATTERN = process.env.VIDEO_NAMING_PATTERN || '{userId}@twitt
 
 const server = http.createServer((req, res) => {
   req.resume().on('end', () => {
-    const tweetURL = url.parse(req.url).query;
+    const tweetURL = new URL(req.url, 'https://dummy.io').search.slice(1);
     const [userId, tweetId] = [...[...tweetURL.matchAll(/.*\/(.*)\/status\/(\d+).*/g)][0]].slice(1);
     const outputFileName = VIDEO_NAMING_PATTERN
       .replace('{userId}', userId)
@@ -41,8 +40,7 @@ const server = http.createServer((req, res) => {
       res
         .writeHead(200, { 'Content-Type': 'application/json' })
         .end(JSON.stringify(resBody));
-    }
-    else {
+    } else {
       const resBody = { ok: false, reason: stderr };
       res
         .writeHead(200, { 'Content-Type': 'application/json' })
