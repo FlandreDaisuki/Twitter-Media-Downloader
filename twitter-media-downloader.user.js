@@ -2,7 +2,7 @@
 // @name         Tweetdeck Media Downloader
 // @namespace    https://github.com/FlandreDaisuki
 // @description  Enjoy it.
-// @version      0.4.2
+// @version      0.4.3
 // @author       FlandreDaisuki
 // @match        https://tweetdeck.twitter.com/*
 // @match        https://twitter.com/*
@@ -250,8 +250,12 @@ if (hostname === 'twitter.com') {
     const swipeEls = dialogModelEl.querySelectorAll('[data-testid="swipe-to-dismiss"]');
     if (swipeEls.length === 1) {
       const theOnlySwipeEl = swipeEls[0];
-      const imageEl = theOnlySwipeEl.querySelector('img');
-      downloadBtnEl.onclick = () => downloadImage(imageEl, location.href);
+      downloadBtnEl.onclick = (event) => {
+        event.stopPropagation();
+
+        const imageEl = theOnlySwipeEl.querySelector('img');
+        downloadImage(imageEl, location.href);
+      };
     } else {
       downloadBtnEl.onclick = (event) => {
         event.stopPropagation();
