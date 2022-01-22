@@ -2,7 +2,7 @@
 // @name         Tweetdeck Media Downloader
 // @namespace    https://github.com/FlandreDaisuki
 // @description  Enjoy it.
-// @version      0.4.3
+// @version      0.4.4
 // @author       FlandreDaisuki
 // @match        https://tweetdeck.twitter.com/*
 // @match        https://twitter.com/*
@@ -110,7 +110,7 @@ const TWITTER_STYLE_SHEET = `
 .🐦📹🔽:hover .🐦📹🔽-icon-background {
   background-color: rgba(0, 200, 200, 0.1);
 }
-🐦🖼️🔽-icon-background {
+.🐦🖼️🔽-icon-background {
   background-color: rgba(0, 0, 0, 0);
 }
 .🐦🖼️🔽:hover .🐦🖼️🔽-icon-background {
