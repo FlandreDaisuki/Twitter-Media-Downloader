@@ -2,7 +2,7 @@
 // @name         Tweetdeck Media Downloader
 // @namespace    https://github.com/FlandreDaisuki
 // @description  Enjoy it.
-// @version      0.4.0
+// @version      0.4.1
 // @author       FlandreDaisuki
 // @match        https://tweetdeck.twitter.com/*
 // @match        https://twitter.com/*
@@ -258,12 +258,12 @@ if (hostname === 'twitter.com') {
         const transformString = imageListEl.style.transform; // "translate3d(-1234px, 0px, 0px)"
         const widthString = imageListEl.style.width; // "3702px"
 
-        const transformOffset = parseFloat(transformString.replace(/translate3d\(([-\d]+)px.*/, '$1'));
+        const transformOffset = parseFloat(transformString.replace(/translate3d\(([.-\d]+)px.*/, '$1'));
         const width = parseFloat(widthString.replace(/[^\d]/g, ''));
 
-        const unitOffset = width / swipeEls.length;
+        const unitOffset = width / imageListEl.children.length;
         const currentIndex = Math.abs(Math.round(transformOffset / unitOffset));
-        const imageEl = swipeEls[currentIndex].querySelector('img');
+        const imageEl = imageListEl.children[currentIndex].querySelector('img');
 
         downloadImage(imageEl, location.href);
       };
@@ -319,11 +319,9 @@ if (hostname === 'tweetdeck.twitter.com') {
 
     const mediaImg = dialogModelEl.querySelector('.media-img');
     if (mediaImg) {
-      a.id = 'TMD-photo-download-btn';
+      a.id = '🐦🖼️🔽';
       a.onclick = function clickToDownloadImage() {
-        const tweetURL = dialogModelEl.querySelector('time > a').href;
-        console.debug('tweetURL', tweetURL);
-        downloadImage(mediaImg, tweetURL);
+        downloadImage(mediaImg, dialogModelEl.querySelector('time > a').href);
       };
 
       origlinkEl.insertAdjacentElement('afterend', a);
@@ -331,7 +329,7 @@ if (hostname === 'tweetdeck.twitter.com') {
 
     const mediaVideo = dialogModelEl.querySelector('.js-media-native-video');
     if (mediaVideo) {
-      a.id = 'TMD-video-download-btn';
+      a.id = '🐦📹🔽';
       origlinkEl.insertAdjacentElement('afterend', a);
       a.onclick = () => {
         const href = dialogModelEl.querySelector('.tweet-timestamp a').href;
