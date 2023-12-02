@@ -1,8 +1,8 @@
-FROM node:14-alpine
+FROM node:20-alpine
 
 WORKDIR /root
 
-RUN apk add --no-cache tzdata youtube-dl
+RUN apk add --no-cache tzdata yt-dlp
 
 COPY index.js /root/index.js
 

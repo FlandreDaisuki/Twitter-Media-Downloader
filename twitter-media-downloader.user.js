@@ -2,11 +2,10 @@
 // @name         Tweetdeck Media Downloader
 // @namespace    https://github.com/FlandreDaisuki
 // @description  Enjoy it.
-// @version      0.4.4
+// @version      0.5.0
 // @author       FlandreDaisuki
-// @match        https://tweetdeck.twitter.com/*
 // @match        https://twitter.com/*
-// @require      https://unpkg.com/sentinel-js@0.0.5/dist/sentinel.js
+// @require      https://unpkg.com/winkblue@0.0.3/dist/winkblue.js
 // @license      MIT
 // @noframes
 // @grant        GM_download
@@ -17,7 +16,8 @@
 const PORT = 10001;
 const IMG_NAMING_PATTERN = '@{userId}-{twimgId}';
 
-/* global sentinel */
+/* global winkblue */
+/* cSpell:ignore winkblue */
 
 const SERVER_ORIGIN = `http://127.0.0.1:${PORT}`;
 const { hostname } = location;
@@ -98,6 +98,9 @@ const TWITTER_STYLE_SHEET = `
 .min-width-full {
   min-width: 100%;
 }
+.🐦📹🔽 {
+  justify-content: flex-end;
+}
 .🐦📹🔽-text {
   color: var(--🐦-text-color);
 }
@@ -132,27 +135,29 @@ if (hostname === 'twitter.com') {
     } ${TWITTER_STYLE_SHEET}`);
   }
 
-  sentinel.on('main', (mainEl) => {
+  winkblue.on('main', (mainEl) => {
     mainEl.appendChild(dialogEl);
-    sentinel.off('main');
+    winkblue.off('main');
   });
 
-  sentinel.on('article[role="article"] video', (videoEl) => {
+  winkblue.on('article[role="article"] video', (videoEl) => {
     const articleEl = videoEl.closest('article');
     const tweetActionGroupEl = articleEl.querySelector('[role="group"]');
     tweetActionGroupEl.classList.add('min-width-full');
     const downloadBtnHTML = `
-<div class="🐦📹🔽 css-1dbjc4n r-18u37iz r-1h0z5md">
-  <div role="button" tabindex="0" class="css-18t94o4 css-1dbjc4n r-1777fci r-bt1l66 r-1ny4l3l r-bztko3 r-lrvibr">
-    <div dir="ltr" class="🐦📹🔽-text css-901oao r-1awozwy r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0">
-      <div class="🐦📹🔽-icon css-1dbjc4n r-xoduu5">
-        <div class="🐦📹🔽-icon-background css-1dbjc4n r-sdzlij r-1p0dtai r-xoduu5 r-1d2f490 r-xf4iuw r-1ny4l3l r-u8s1d r-zchlnj r-ipm5af r-o7ynqc r-6416eg"></div>
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="🐦📹🔽-icon-svg iconify iconify--ph r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-1hdv0qi" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="24 40 216 200"><path d="M80.3 115.7a8 8 0 0 1 11.4-11.3l28.3 28.3V40a8 8 0 0 1 16 0v92.7l28.3-28.3a8 8 0 0 1 11.4 11.3l-42 42a8.2 8.2 0 0 1-11.4 0zM216 144a8 8 0 0 0-8 8v56H48v-56a8 8 0 0 0-16 0v56a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-56a8 8 0 0 0-8-8z" fill="currentColor"></path></svg>
+<div class="🐦📹🔽 css-175oi2r r-18u37iz r-1h0z5md r-13awgt0">
+  <div role="button" tabindex="0" class="css-175oi2r r-1777fci r-bt1l66 r-bztko3 r-lrvibr r-1loqt21 r-1ny4l3l">
+    <div dir="ltr" class="🐦📹🔽-text css-1rynq56 r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-1awozwy r-6koalj r-1h0z5md r-o7ynqc r-clp7b1 r-3s2u2q">
+      <div class="🐦📹🔽-icon css-175oi2r r-xoduu5">
+        <div class="🐦📹🔽-icon-background css-175oi2r r-xoduu5 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-1niwhzg r-sdzlij r-xf4iuw r-o7ynqc r-6416eg r-1ny4l3l"></div>
+          <svg aria-hidden="true" class="🐦📹🔽-icon-svg iconify iconify--ph r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-50lct3 r-1srniue" preserveAspectRatio="xMidYMid meet" viewBox="24 40 216 200">
+            <path d="M80.3 115.7a8 8 0 0 1 11.4-11.3l28.3 28.3V40a8 8 0 0 1 16 0v92.7l28.3-28.3a8 8 0 0 1 11.4 11.3l-42 42a8.2 8.2 0 0 1-11.4 0zM216 144a8 8 0 0 0-8 8v56H48v-56a8 8 0 0 0-16 0v56a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-56a8 8 0 0 0-8-8z" fill="currentColor"></path>
+          </svg>
       </div>
-      <div class="css-1dbjc4n r-xoduu5 r-1udh08x">
+      <div class="css-175oi2r r-xoduu5 r-1udh08x">
         <span data-testid="app-text-transition-container" style="transform: translate3d(0px, 0px, 0px); transition-property: transform; transition-duration: 0.3s;">
-          <span class="css-901oao css-16my406 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-1e081e0 r-qvutc0">
-            <span class="css-901oao css-16my406 r-poiln3 r-bcqeeo r-qvutc0">下載</span>
+          <span class="css-1qaijid r-qvutc0 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-1pn2ns4" style="text-overflow: unset;">
+            <span class="css-1qaijid r-bcqeeo r-qvutc0 r-poiln3" style="text-overflow: unset;">下載</span>
           </span>
         </span>
       </div>
@@ -173,7 +178,7 @@ if (hostname === 'twitter.com') {
     };
   });
 
-  sentinel.on('article[role="article"] a[href*="/photo"] img', (imageEl) => {
+  winkblue.on('article[role="article"] a[href*="/photo"] img', (imageEl) => {
     const articleEl = imageEl.closest('article');
     const photoCountInArticle = articleEl.querySelectorAll('a[href*="/photo"]').length;
     if (photoCountInArticle > 1) { return; }
@@ -181,17 +186,19 @@ if (hostname === 'twitter.com') {
     const tweetActionGroupEl = articleEl.querySelector('[role="group"]');
     tweetActionGroupEl.classList.add('min-width-full');
     const downloadBtnHTML = `
-<div class="🐦📹🔽 css-1dbjc4n r-18u37iz r-1h0z5md">
-  <div role="button" tabindex="0" class="css-18t94o4 css-1dbjc4n r-1777fci r-bt1l66 r-1ny4l3l r-bztko3 r-lrvibr">
-    <div dir="ltr" class="🐦📹🔽-text css-901oao r-1awozwy r-14j79pv r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0">
-      <div class="🐦📹🔽-icon css-1dbjc4n r-xoduu5">
-        <div class="🐦📹🔽-icon-background css-1dbjc4n r-sdzlij r-1p0dtai r-xoduu5 r-1d2f490 r-xf4iuw r-1ny4l3l r-u8s1d r-zchlnj r-ipm5af r-o7ynqc r-6416eg"></div>
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="🐦📹🔽-icon-svg iconify iconify--ph r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-1hdv0qi" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="24 40 216 200"><path d="M80.3 115.7a8 8 0 0 1 11.4-11.3l28.3 28.3V40a8 8 0 0 1 16 0v92.7l28.3-28.3a8 8 0 0 1 11.4 11.3l-42 42a8.2 8.2 0 0 1-11.4 0zM216 144a8 8 0 0 0-8 8v56H48v-56a8 8 0 0 0-16 0v56a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-56a8 8 0 0 0-8-8z" fill="currentColor"></path></svg>
+<div class="🐦📹🔽 css-175oi2r r-18u37iz r-1h0z5md r-13awgt0">
+  <div role="button" tabindex="0" class="css-175oi2r r-1777fci r-bt1l66 r-bztko3 r-lrvibr r-1loqt21 r-1ny4l3l">
+    <div dir="ltr" class="🐦📹🔽-text css-1rynq56 r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-1awozwy r-6koalj r-1h0z5md r-o7ynqc r-clp7b1 r-3s2u2q">
+      <div class="🐦📹🔽-icon css-175oi2r r-xoduu5">
+        <div class="🐦📹🔽-icon-background css-175oi2r r-xoduu5 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-1niwhzg r-sdzlij r-xf4iuw r-o7ynqc r-6416eg r-1ny4l3l"></div>
+          <svg aria-hidden="true" class="🐦📹🔽-icon-svg iconify iconify--ph r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-50lct3 r-1srniue" preserveAspectRatio="xMidYMid meet" viewBox="24 40 216 200">
+            <path d="M80.3 115.7a8 8 0 0 1 11.4-11.3l28.3 28.3V40a8 8 0 0 1 16 0v92.7l28.3-28.3a8 8 0 0 1 11.4 11.3l-42 42a8.2 8.2 0 0 1-11.4 0zM216 144a8 8 0 0 0-8 8v56H48v-56a8 8 0 0 0-16 0v56a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-56a8 8 0 0 0-8-8z" fill="currentColor"></path>
+          </svg>
       </div>
-      <div class="css-1dbjc4n r-xoduu5 r-1udh08x">
+      <div class="css-175oi2r r-xoduu5 r-1udh08x">
         <span data-testid="app-text-transition-container" style="transform: translate3d(0px, 0px, 0px); transition-property: transform; transition-duration: 0.3s;">
-          <span class="css-901oao css-16my406 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-1e081e0 r-qvutc0">
-            <span class="css-901oao css-16my406 r-poiln3 r-bcqeeo r-qvutc0">下載</span>
+          <span class="css-1qaijid r-qvutc0 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-1pn2ns4" style="text-overflow: unset;">
+            <span class="css-1qaijid r-bcqeeo r-qvutc0 r-poiln3" style="text-overflow: unset;">下載</span>
           </span>
         </span>
       </div>
@@ -213,7 +220,7 @@ if (hostname === 'twitter.com') {
     };
   });
 
-  sentinel.on('#layers [aria-modal][role="dialog"] [aria-label][role="group"]', (maybeDialogModelTweetActionGroupEl) => {
+  winkblue.on('#layers [aria-modal][role="dialog"] [aria-label][role="group"]', (maybeDialogModelTweetActionGroupEl) => {
     const dialogModelEl = maybeDialogModelTweetActionGroupEl.closest('[aria-modal][role="dialog"]');
     if (!dialogModelEl) { return; }
 
@@ -226,17 +233,17 @@ if (hostname === 'twitter.com') {
     if (tweetActionGroupEl.querySelector('.🐦🖼️🔽')) { return; }
 
     const downloadBtnHTML = `
-<div class="🐦🖼️🔽 css-1dbjc4n r-18u37iz r-1h0z5md">
-  <div role="button" tabindex="0" class="css-18t94o4 css-1dbjc4n r-1777fci r-bt1l66 r-1ny4l3l r-bztko3 r-lrvibr">
-    <div dir="ltr" class="🐦🖼️🔽-text css-901oao r-1awozwy r-jwli3a r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0">
-      <div class="🐦🖼️🔽-icon css-1dbjc4n r-xoduu5">
-        <div class="🐦🖼️🔽-icon-background css-1dbjc4n r-sdzlij r-1p0dtai r-xoduu5 r-1d2f490 r-xf4iuw r-1ny4l3l r-u8s1d r-zchlnj r-ipm5af r-o7ynqc r-6416eg"></div>
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="🐦🖼️🔽-icon-svg iconify iconify--ph r-4qtqp9 r-yyyyoo r-50lct3 r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-1srniue" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="24 40 216 200"><path d="M80.3 115.7a8 8 0 0 1 11.4-11.3l28.3 28.3V40a8 8 0 0 1 16 0v92.7l28.3-28.3a8 8 0 0 1 11.4 11.3l-42 42a8.2 8.2 0 0 1-11.4 0zM216 144a8 8 0 0 0-8 8v56H48v-56a8 8 0 0 0-16 0v56a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-56a8 8 0 0 0-8-8z" fill="currentColor"></path></svg>
+<div class="🐦🖼️🔽 css-175oi2r r-18u37iz r-1h0z5md">
+  <div role="button" tabindex="0" class="css-175oi2r r-1777fci r-bt1l66 r-bztko3 r-lrvibr r-1loqt21 r-1ny4l3l">
+    <div dir="ltr" class="🐦🖼️🔽-text css-1rynq56 r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-1awozwy r-6koalj r-1h0z5md r-o7ynqc r-clp7b1 r-3s2u2q">
+      <div class="🐦🖼️🔽-icon css-175oi2r r-xoduu5">
+        <div class="🐦🖼️🔽-icon-background css-175oi2r r-xoduu5 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-1niwhzg r-sdzlij r-xf4iuw r-o7ynqc r-6416eg r-1ny4l3l"></div>
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="🐦🖼️🔽-icon-svg iconify iconify--ph r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-50lct3 r-1srniue" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="24 40 216 200"><path d="M80.3 115.7a8 8 0 0 1 11.4-11.3l28.3 28.3V40a8 8 0 0 1 16 0v92.7l28.3-28.3a8 8 0 0 1 11.4 11.3l-42 42a8.2 8.2 0 0 1-11.4 0zM216 144a8 8 0 0 0-8 8v56H48v-56a8 8 0 0 0-16 0v56a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-56a8 8 0 0 0-8-8z" fill="currentColor"></path></svg>
       </div>
-      <div class="css-1dbjc4n r-xoduu5 r-1udh08x">
+      <div class="css-175oi2r r-xoduu5 r-1udh08x">
         <span data-testid="app-text-transition-container" style="transform: translate3d(0px, 0px, 0px); transition-property: transform; transition-duration: 0.3s;">
-          <span class="css-901oao css-16my406 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-1e081e0 r-qvutc0">
-            <span class="css-901oao css-16my406 r-poiln3 r-bcqeeo r-qvutc0">下載</span>
+          <span class="css-1qaijid r-qvutc0 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-1pn2ns4" style="text-overflow: unset;">
+            <span class="css-1qaijid r-bcqeeo r-qvutc0 r-poiln3" style="text-overflow: unset;">下載</span>
           </span>
         </span>
       </div>
@@ -274,106 +281,5 @@ if (hostname === 'twitter.com') {
         downloadImage(imageEl, location.href);
       };
     }
-  });
-}
-
-const TWEETDECK_STYLE_SHEET = `
-html .med-tray.js-mediaembed {
-  display: grid;
-  grid-template-areas: "thumb thumb thumb" "link-vo link-dl link-fm";
-}
-html .med-tray.js-mediaembed > :first-child {
-  grid-area: thumb;
-  justify-self: center;
-  margin-bottom: 25px !important;
-}
-html .med-origlink,
-html .med-flaglink {
-  position: relative !important;
-}
-html .med-origlink {
-  grid-area: link-vo;
-}
-html .med-downloadlink {
-  grid-area: link-dl;
-}
-html .med-flaglink {
-  grid-area: link-fm;
-}
-#🐦💬 {
-  position: fixed;
-  top: 50%;
-  z-index: 301;
-}
-.icon-download:before{
-  content:"\\F186";
-}
-`;
-
-if (hostname === 'tweetdeck.twitter.com') {
-  injectStyleSheet(TWEETDECK_STYLE_SHEET);
-
-  document.body.appendChild(dialogEl);
-
-  sentinel.on('.med-origlink', (origlinkEl) => {
-    const dialogModelEl = origlinkEl.closest('#open-modal');
-
-    const a = document.createElement('a');
-    a.className = 'med-downloadlink';
-    a.textContent = 'Download';
-    a.href = 'javascript:;';
-
-    const mediaImg = dialogModelEl.querySelector('.media-img');
-    if (mediaImg) {
-      a.id = '🐦🖼️🔽';
-      a.onclick = function clickToDownloadImage() {
-        downloadImage(mediaImg, dialogModelEl.querySelector('time > a').href);
-      };
-
-      origlinkEl.insertAdjacentElement('afterend', a);
-    }
-
-    const mediaVideo = dialogModelEl.querySelector('.js-media-native-video');
-    if (mediaVideo) {
-      a.id = '🐦📹🔽';
-      origlinkEl.insertAdjacentElement('afterend', a);
-      a.onclick = () => {
-        const href = dialogModelEl.querySelector('.tweet-timestamp a').href;
-        if (href) {
-          downloadVideo(href);
-        } else {
-          openDialog('找不到連結');
-        }
-      };
-    }
-  });
-
-  sentinel.on('.js-media-preview-container.is-gif, .js-media-preview-container.is-video', (previewContainerEl) => {
-    const articleEl = previewContainerEl.closest('article.stream-item');
-    if (!articleEl) { return; }
-
-    const tweetActionGroupEl = articleEl.querySelector('.js-tweet-actions');
-    if (!tweetActionGroupEl) { return; }
-    if (tweetActionGroupEl.querySelector('a[rel="download"]')) { return; }
-
-    const downloadBtnHTML = `
-<li class="tweet-action-item pull-left margin-r--10">
-  <a class="tweet-action position-rel" href="javascript:;" rel="download">
-    <i class="icon icon-download txt-center pull-left"></i>
-    <span class="is-vishidden">Download</span>
-    <span class="pull-right margin-l--2 margin-t--1 txt-size--12">下載</span>
-  </a>
-</li>`;
-
-    const downloadBtnEl = getElByHTML(downloadBtnHTML);
-    tweetActionGroupEl.insertAdjacentElement('afterbegin', downloadBtnEl);
-    downloadBtnEl.onclick = () => {
-      const href = articleEl.querySelector('.tweet-timestamp a')?.href;
-      if (href) {
-        downloadVideo(href);
-      } else {
-        openDialog('找不到連結');
-      }
-    };
   });
 }
