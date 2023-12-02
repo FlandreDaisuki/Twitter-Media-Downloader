@@ -2,24 +2,18 @@
 
 - [Twitter Media Downloader](#twitter-media-downloader)
   - [Requirement](#requirement)
+  - [Installation](#installation)
     - [Backend](#backend)
     - [Frontend](#frontend)
-  - [Installation](#installation)
-    - [Backend](#backend-1)
-    - [Frontend](#frontend-1)
   - [License](#license)
 
 ## Requirement
 
-### Backend
-
-* Docker
-* Docker Compose
-
-### Frontend
-
-* Tampermonkey
-* Tampermonkey of supported browser
+- Backend
+  - Docker
+- Frontend
+  - Tampermonkey
+  - Tampermonkey of supported browser
 
 ## Installation
 
@@ -29,39 +23,12 @@
 $ git clone git@github.com:FlandreDaisuki/Twitter-Media-Downloader.git
 $ cd Twitter-Media-Downloader
 
-# build image
-$ docker-compose build
-```
+$ ./run.sh ~/Downloads
 
-Change the configuration of `docker-compose.yml` to yours.
-
-```yaml
-version: "3.2"
-
-services:
-  twitter-video-dl:
-    build: .
-    image: flandre/twitter-video-dl
-    container_name: twitter-video-dl
-    ports:
-      - 10001:10001
-      #       ^^^^^ should correspond to ①
-    volumes:
-      - /your/host/download/path:/download
-      # ^^^^^^^^^^^^^^^^^^^^^^^^ change to your download path
-    environment:
-      - TZ=Asia/Taipei # change to yours
-      - LANG=zh_TW.UTF-8 # change to yours
-      - PORT=10001 # ①, default is 10001
-      - VIDEO_NAMING_PATTERN={userId}@twitter-{tweetId}
-      # customize yours      ^^^^^^^^^^^^^^^^^^^^^^^^^^
-    restart: unless-stopped
-```
-
-Then compose up the container:
-
-```shell
-$ docker-compose up -d
+# with options
+$ PORT=20002 \
+  VIDEO_NAMING_PATTERN='{tweetId}' \
+  ./run.sh ~/Downloads
 ```
 
 ### Frontend
@@ -85,23 +52,23 @@ Change the configuration of `twitter-media-downloader.user.js` to yours.
 
 ```javascript
 /**
- * This value should correspond to
- * left hand side of "ports" in docker-compose.yml
+ - This value should correspond to
+ - left hand side of "ports" you run in backend, default 10001
  */
 const PORT = 10001;
 
 /**
- * Pattern Placeholder:
+ - Pattern Placeholder:
  *
- * tweetURL:
- *   https://twitter.com/{userId}/status/{tweetId}/photo/{imgOrdinal}
- * twimgURL:
- *   https://pbs.twimg.com/media/{twimgId}?format=jpg&name=medium
+ - tweetURL:
+ -   https://twitter.com/{userId}/status/{tweetId}/photo/{imgOrdinal}
+ - twimgURL:
+ -   https://pbs.twimg.com/media/{twimgId}?format=jpg&name=medium
  *
- * Example:
+ - Example:
  *
- * https://twitter.com/sakipee36/status/1172804045368487936/photo/2
- * https://pbs.twimg.com/media/EEajDOtUEAAfM7e?format=jpg&name=medium
+ - https://twitter.com/sakipee36/status/1172804045368487936/photo/2
+ - https://pbs.twimg.com/media/EEajDOtUEAAfM7e?format=jpg&name=medium
  */
 const IMG_NAMING_PATTERN = '@{userId}-{twimgId}';
 ```
@@ -110,4 +77,4 @@ const IMG_NAMING_PATTERN = '@{userId}-{twimgId}';
 
 The MIT License (MIT)
 
-Copyright (c) 2019 FlandreDaisuki
+Copyright (c) 2019-2023 FlandreDaisuki
