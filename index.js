@@ -8,6 +8,8 @@ const HOSTNAME = '0.0.0.0';
 const PORT = process.env.PORT || 10001;
 const OUTPUT_TARGET_PATH = '/download';
 const VIDEO_NAMING_PATTERN = process.env.VIDEO_NAMING_PATTERN || '{userId}@twitter-{tweetId}';
+const TWITTER_AUTH_USER = process.env.TWITTER_AUTH_USER ?? ''
+const TWITTER_AUTH_PASS = process.env.TWITTER_AUTH_PASS ?? ''
 
 const server = http.createServer((req, res) => {
   req.resume().on('end', () => {
@@ -17,9 +19,17 @@ const server = http.createServer((req, res) => {
       .replace('{userId}', userId)
       .replace('{tweetId}', tweetId)
       .concat('.mp4');
+
+    const authArgs = (TWITTER_AUTH_USER && TWITTER_AUTH_PASS) ? [
+      '--username',
+      TWITTER_AUTH_USER,
+      '--password',
+      TWITTER_AUTH_PASS
+    ]: []
     const cmdArgs = [
       tweetURL,
       '--output',
+      ...authArgs,
       `'${path.join(OUTPUT_TARGET_PATH, outputFileName)}'`,
     ];
 
