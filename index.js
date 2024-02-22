@@ -25,15 +25,16 @@ const server = http.createServer((req, res) => {
       TWITTER_AUTH_USER,
       '--password',
       TWITTER_AUTH_PASS
-    ]: []
+    ] : [];
+
     const cmdArgs = [
-      tweetURL,
-      '--output',
       ...authArgs,
+      '--output',
       `'${path.join(OUTPUT_TARGET_PATH, outputFileName)}'`,
+      tweetURL,
     ];
 
-    const output = spawnSync('youtube-dl', cmdArgs, { shell: true });
+    const output = spawnSync('yt-dlp', cmdArgs, { shell: true });
     const stdout = output.stdout.toString().trim();
     const stderr = output.stderr.toString().trim();
     if (stdout) {
