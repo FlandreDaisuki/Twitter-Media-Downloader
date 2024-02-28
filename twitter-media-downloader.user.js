@@ -2,7 +2,7 @@
 // @name         Tweetdeck Media Downloader
 // @namespace    https://github.com/FlandreDaisuki
 // @description  Enjoy it.
-// @version      0.6.0
+// @version      0.6.1
 // @author       FlandreDaisuki
 // @match        https://twitter.com/*
 // @require      https://unpkg.com/winkblue@0.0.6/dist/winkblue.umd.js
@@ -221,7 +221,7 @@ winkblue.on('article[role="article"]:has(video)', (articleEl) => {
 });
 
 // tweet has single picture, multiple pictures or mixed pictures and videos
-winkblue.on('article[role="article"] div[id][aria-labelledby] a[href*="/photo"] img', (imageEl) => {
+winkblue.on('article[role="article"] div[id][aria-labelledby] a[href*="/photo"]:not([href$="/media_tags"]) img', (imageEl) => {
   const linkEl = imageEl.closest('a[href*="/photo"]');
 
   const downloadBtnHTML = `
