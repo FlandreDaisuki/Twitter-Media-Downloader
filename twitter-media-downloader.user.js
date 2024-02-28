@@ -2,7 +2,7 @@
 // @name         Tweetdeck Media Downloader
 // @namespace    https://github.com/FlandreDaisuki
 // @description  Enjoy it.
-// @version      0.6.1
+// @version      0.6.2
 // @author       FlandreDaisuki
 // @match        https://twitter.com/*
 // @require      https://unpkg.com/winkblue@0.0.6/dist/winkblue.umd.js
@@ -162,20 +162,22 @@ const TWITTER_STYLE_SHEET = `
 }
 `;
 
-const isDarkMode = getComputedStyle(document.documentElement).colorScheme === 'dark';
-if (isDarkMode) {
-  injectStyleSheet(`
+winkblue.on('html[style*="color-scheme"]', (htmlEl) => {
+  const isDarkMode = getComputedStyle(htmlEl).colorScheme === 'dark';
+  if (isDarkMode) {
+    injectStyleSheet(`
   :root {
     --🐦-text-color: rgb(136, 153, 166);
     --🐦-text-color2: rgb(255, 255, 255);
   } ${TWITTER_STYLE_SHEET}`);
-} else {
-  injectStyleSheet(`
+  } else {
+    injectStyleSheet(`
   :root {
     --🐦-text-color: rgb(83, 100, 113);
     --🐦-text-color2: rgb(0, 0, 0);
   } ${TWITTER_STYLE_SHEET}`);
-}
+  }
+});
 
 winkblue.on('body', (mainEl) => {
   mainEl.appendChild(dialogEl);
