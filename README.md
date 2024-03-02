@@ -30,12 +30,12 @@ $ PORT=20002 \
   VIDEO_NAMING_PATTERN='{tweetId}' \
   ./run.sh ~/Downloads
 
-# with auth
+# with yt-dlp args
 $ PORT=20002 \
-  TWITTER_AUTH_USER='elon_musk@twitter-mail.com' \
-  TWITTER_AUTH_PASS='I_am^the$boss@of~tesla' \
   VIDEO_NAMING_PATTERN='{tweetId}' \
-  ./run.sh ~/Downloads
+  ./run.sh ~/Downloads -- \
+  --username='elon_musk@twitter-mail.com' \
+  --password='I_am^the$boss@of~tesla'
 ```
 
 ### Frontend

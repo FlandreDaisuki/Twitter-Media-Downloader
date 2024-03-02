@@ -13,18 +13,35 @@ if [ -z "${DOWNLOAD_PATH}" ]; then
   exit 1
 fi
 
-TWITTER_AUTH_USER=
-TWITTER_AUTH_PASS=
+shift 1
 
-docker run -d \
-  --name twitter-media-downloader \
-  --restart unless-stopped \
-  -p "10001:${PORT}" \
-  -v "$(realpath "${DOWNLOAD_PATH}"):/download" \
-  -e "TZ=${TZ:-Asia/Taipei}" \
-  -e "LANG=${LANG:-zh_TW.UTF-8}" \
-  -e "PORT=${PORT}" \
-  -e "VIDEO_NAMING_PATTERN=${VIDEO_NAMING_PATTERN}" \
-  -e "TWITTER_AUTH_USER=${TWITTER_AUTH_USER}" \
-  -e "TWITTER_AUTH_PASS=${TWITTER_AUTH_PASS}" \
-  ghcr.io/flandredaisuki/twitter-media-downloader:latest
+if [ -n "${FIREFOX_BROWSER_PROFILE_PATH}" ]; then
+
+  docker run -d \
+    --name twitter-media-downloader \
+    --restart unless-stopped \
+    -p "10001:${PORT}" \
+    -v "$(realpath "${FIREFOX_BROWSER_PROFILE_PATH}"):/browser-profile:ro" \
+    -v "$(realpath "${DOWNLOAD_PATH}"):/download" \
+    -e "TZ=${TZ:-Asia/Taipei}" \
+    -e "LANG=${LANG:-zh_TW.UTF-8}" \
+    -e "PORT=${PORT}" \
+    -e "VIDEO_NAMING_PATTERN=${VIDEO_NAMING_PATTERN}" \
+    ghcr.io/flandredaisuki/twitter-media-downloader:latest \
+    /root/index.js "$@" -- \
+    --cookies-from-browser "firefox:/browser-profile"
+
+else
+
+  docker run -d \
+    --name twitter-media-downloader \
+    --restart unless-stopped \
+    -p "10001:${PORT}" \
+    -v "$(realpath "${DOWNLOAD_PATH}"):/download" \
+    -e "TZ=${TZ:-Asia/Taipei}" \
+    -e "LANG=${LANG:-zh_TW.UTF-8}" \
+    -e "PORT=${PORT}" \
+    -e "VIDEO_NAMING_PATTERN=${VIDEO_NAMING_PATTERN}" \
+    ghcr.io/flandredaisuki/twitter-media-downloader:latest \
+    /root/index.js "$@"
+fi

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const { argv } = require('process');
 const http = require('http');
 const path = require('path');
 const { spawnSync } = require('child_process');
@@ -8,8 +9,14 @@ const HOSTNAME = '0.0.0.0';
 const PORT = process.env.PORT || 10001;
 const OUTPUT_TARGET_PATH = '/download';
 const VIDEO_NAMING_PATTERN = process.env.VIDEO_NAMING_PATTERN || '{userId}@twitter-{tweetId}';
-const TWITTER_AUTH_USER = process.env.TWITTER_AUTH_USER ?? ''
-const TWITTER_AUTH_PASS = process.env.TWITTER_AUTH_PASS ?? ''
+
+const pipeArgs = (()=>{
+  const idx = argv.indexOf('--');
+  if(idx >= 0) {
+    return argv.slice(idx + 1);
+  }
+  return [];
+})()
 
 const server = http.createServer((req, res) => {
   req.resume().on('end', () => {
@@ -20,15 +27,8 @@ const server = http.createServer((req, res) => {
       .replace('{tweetId}', tweetId)
       .concat('.mp4');
 
-    const authArgs = (TWITTER_AUTH_USER && TWITTER_AUTH_PASS) ? [
-      '--username',
-      TWITTER_AUTH_USER,
-      '--password',
-      TWITTER_AUTH_PASS
-    ] : [];
-
     const cmdArgs = [
-      ...authArgs,
+      ...pipeArgs,
       '--output',
       `'${path.join(OUTPUT_TARGET_PATH, outputFileName)}'`,
       tweetURL,
