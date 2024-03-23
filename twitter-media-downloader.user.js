@@ -2,7 +2,7 @@
 // @name         Tweetdeck Media Downloader
 // @namespace    https://github.com/FlandreDaisuki
 // @description  Enjoy it.
-// @version      0.6.2
+// @version      0.6.3
 // @author       FlandreDaisuki
 // @match        https://twitter.com/*
 // @require      https://unpkg.com/winkblue@0.0.6/dist/winkblue.umd.js
@@ -132,6 +132,7 @@ const TWITTER_STYLE_SHEET = `
 .🐦🖼️🔽-icon-svg {
   width: 0.8rem;
   height: 0.8rem;
+  transform: translateX(1px);
 }
 .🐦🖼️🔽-icon-background {
   background-color: rgba(0, 0, 0, 0);
