@@ -1,11 +1,18 @@
 FROM node:20-alpine
 
-WORKDIR /root
+RUN apk add --no-cache tzdata python3 \
+    && mkdir -p /app \
+    && apk add --virtual build-deps curl \
+    && curl -sL -o /usr/bin/yt-dlp 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp' \
+    && chmod +x /usr/bin/yt-dlp \
+    && apk del build-deps
 
-RUN apk add --no-cache tzdata yt-dlp
+COPY server.mjs twitter-media-downloader.user.js /app/
 
-COPY index.js /root/index.js
+RUN chmod +x /app/server.mjs
 
-RUN chmod +x index.js
+WORKDIR /app
 
-CMD [ "/root/index.js" ]
+EXPOSE 10001
+
+CMD [ "/app/server.mjs" ]

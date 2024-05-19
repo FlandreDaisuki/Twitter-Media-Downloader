@@ -1,0 +1,15 @@
+services:
+  twitter-media-downloader:
+    image: ghcr.io/flandredaisuki/twitter-media-downloader:2.0.0
+    container_name: twitter-media-downloader
+    restart: unless-stopped
+    ports:
+      - "${PORT:-10001}:10001"
+    environment:
+      - "TZ=${TZ}"
+      - "LANG=${LANG}"
+      - "VIDEO_NAMING_PATTERN=${VIDEO_NAMING_PATTERN}"
+      - "IMAGE_NAMING_PATTERN=${IMAGE_NAMING_PATTERN}"
+    volumes:
+      - "${DOWNLOAD_PATH}:/download"
+    command: /app/server.mjs

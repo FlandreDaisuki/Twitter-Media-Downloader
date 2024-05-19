@@ -5,6 +5,8 @@
   - [Installation](#installation)
     - [Backend](#backend)
     - [Frontend](#frontend)
+  - [Customization](#customization)
+  - [TODO](#todo)
   - [License](#license)
 
 ## Requirement
@@ -12,8 +14,8 @@
 - Backend
   - Docker
 - Frontend
-  - Tampermonkey
-  - Tampermonkey of supported browser
+  - [Tampermonkey](https://www.tampermonkey.net)
+  - Browsers which can install Tampermonkey
 
 ## Installation
 
@@ -23,65 +25,70 @@
 $ git clone git@github.com:FlandreDaisuki/Twitter-Media-Downloader.git
 $ cd Twitter-Media-Downloader
 
-$ ./run.sh ~/Downloads
+# Modify .env values
+# The most important value is `DOWNLOAD_PATH`
+# Please fill it with your host download directory in absolute path
+$ mv .env.example .env
 
-# with options
-$ PORT=20002 \
-  VIDEO_NAMING_PATTERN='{tweetId}' \
-  ./run.sh ~/Downloads
-
-# with yt-dlp args
-$ PORT=20002 \
-  VIDEO_NAMING_PATTERN='{tweetId}' \
-  ./run.sh ~/Downloads -- \
-  --username='elon_musk@twitter-mail.com' \
-  --password='I_am^the$boss@of~tesla'
+$ docker compose up -d
 ```
 
 ### Frontend
 
-Close service worker at `*.twitter.com`:
-
-1. Add following rules to uBlock Origin
-   - `||twitter.com/push_service_worker.js$script,domain=twitter.com`
-   - `||twitter.com/sw.js$script,domain=twitter.com`
-2. Unregister service worker of twitter
-   - Firefox:
-      1. Go [about:serviceworkers](about:serviceworkers)
-      2. Find `*.twitter.com` and unregister it
-   - Chromium-based:
-      1. Go [chrome://serviceworker-internals/](chrome://serviceworker-internals/)
-      2. Find `*.twitter.com` and unregister it
-
-Click [**here**](https://github.com/FlandreDaisuki/Twitter-Media-Downloader/raw/master/twitter-media-downloader.user.js) to install userscript after Tampermonkey has been installed.
-
-Change the configuration of `twitter-media-downloader.user.js` to yours.
-
-```javascript
-/**
- - This value should correspond to
- - left hand side of "ports" you run in backend, default 10001
- */
-const PORT = 10001;
-
-/**
- - Pattern Placeholder:
- *
- - tweetURL:
- -   https://twitter.com/{userId}/status/{tweetId}/photo/{imgOrdinal}
- - twimgURL:
- -   https://pbs.twimg.com/media/{twimgId}?format=jpg&name=medium
- *
- - Example:
- *
- - https://twitter.com/sakipee36/status/1172804045368487936/photo/2
- - https://pbs.twimg.com/media/EEajDOtUEAAfM7e?format=jpg&name=medium
- */
-const IMG_NAMING_PATTERN = '@{userId}-{twimgId}';
+```shell
+$ docker compose logs twitter-media-downloader
+twitter-media-downloader  | Server running at http://0.0.0.0:10001/
+twitter-media-downloader  |
+twitter-media-downloader  | Usage:
+twitter-media-downloader  |   Download userscript:
+twitter-media-downloader  |     GET http://0.0.0.0:10001/twitter-media-downloader.user.js
+twitter-media-downloader  |
+twitter-media-downloader  |   Start an async downloading task by twitter video url:
+twitter-media-downloader  |     GET http://0.0.0.0:10001/download?url=https://x.com/{userId}/status/{tweetId}
+twitter-media-downloader  |
+twitter-media-downloader  | Video Name:
+twitter-media-downloader  |   {userId}@twitter-{tweetId}.mp4
+twitter-media-downloader  |
+twitter-media-downloader  | Destination:
+twitter-media-downloader  |   /download
+twitter-media-downloader  |
+twitter-media-downloader  | Versions:
+twitter-media-downloader  |   yt-dlp: 2024.04.09
 ```
+
+Copy the userscript url to browser then it will trigger Tampermonkey installation.
+
+## Customization
+
+If you are familiar with `yt-dlp`, you may want to pass other args. You can use `--` after `/app/server.mjs`.
+
+e.g.
+
+```yaml
+services:
+  twitter-media-downloader:
+    image: ghcr.io/flandredaisuki/twitter-media-downloader
+    container_name: twitter-media-downloader
+    restart: unless-stopped
+    ports:
+      - "${PORT:-10001}:10001"
+    environment:
+      - "TZ=${TZ}"
+      - "LANG=${LANG}"
+      - "VIDEO_NAMING_PATTERN=${VIDEO_NAMING_PATTERN}"
+      - "IMAGE_NAMING_PATTERN=${IMAGE_NAMING_PATTERN}"
+    volumes:
+      - "${DOWNLOAD_PATH}:/download"
+      - "/path/to/my/firefox/profile:/firefox-profile:ro"
+    command: /app/server.mjs -- --cookies-from-browser firefox:/firefox-profile
+```
+
+## TODO
+
+To reduce image size, I think rewrite server by python3, which is a dependency of `yt-dlp`, is a good idea.
 
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2019-2023 FlandreDaisuki
+Copyright (c) 2019-2024 FlandreDaisuki

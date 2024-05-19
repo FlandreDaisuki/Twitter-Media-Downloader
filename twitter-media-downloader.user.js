@@ -1,25 +1,24 @@
 // ==UserScript==
-// @name         Tweetdeck Media Downloader
-// @namespace    https://github.com/FlandreDaisuki
+// @name         Twitter Media Downloader
+// @namespace    https://github.com/FlandreDaisuki/Twitter-Media-Downloader
 // @description  Enjoy it.
-// @version      0.6.3
+// @version      __USERSCRIPT_VERSION__
 // @author       FlandreDaisuki
-// @match        https://twitter.com/*
-// @require      https://unpkg.com/winkblue@0.0.6/dist/winkblue.umd.js
+// @match        https://x.com/*
+// @require      https://unpkg.com/winkblue@0.1.0/dist/winkblue.umd.js
 // @license      MIT
 // @noframes
 // @grant        GM_download
 // @grant        GM_xmlhttpRequest
-// @connect      127.0.0.1
+// @connect      __USERSCRIPT_HOST_NAME__
 // ==/UserScript==
 
-const PORT = 10001;
-const IMG_NAMING_PATTERN = '@{userId}-{twimgId}';
+const PORT = __USERSCRIPT_PORT__;
+const IMG_NAMING_PATTERN = __USERSCRIPT_IMAGE_NAMING_PATTERN__;
 
-/* global winkblue */
-/* cSpell:ignore winkblue */
+/* global Winkblue */
 
-const SERVER_ORIGIN = `http://127.0.0.1:${PORT}`;
+const SERVER_ORIGIN = `http://__USERSCRIPT_HOST_NAME__:${PORT}`;
 
 const getElByHTML = (html) => {
   const el = document.createElement('div');
@@ -58,7 +57,7 @@ const openDialog = (content, timeout = 3000) => {
 };
 
 const downloadVideo = async(href) => {
-  const resp = await GM_fetch(`${SERVER_ORIGIN}/?${href}`).catch(console.error);
+  const resp = await GM_fetch(`${SERVER_ORIGIN}/download?url=${href}`).catch(console.error);
   const result = JSON.parse(resp.responseText);
   if (result.ok) {
     openDialog('已成功下載 ' + result.dest);
@@ -163,6 +162,7 @@ const TWITTER_STYLE_SHEET = `
 }
 `;
 
+const winkblue = Winkblue.winkblue;
 winkblue.on('html[style*="color-scheme"]', (htmlEl) => {
   const isDarkMode = getComputedStyle(htmlEl).colorScheme === 'dark';
   if (isDarkMode) {
@@ -300,7 +300,13 @@ winkblue.on('#layers [aria-modal][role="dialog"] [aria-label][role="group"]', (m
       event.stopPropagation();
 
       const imageEl = theOnlySwipeEl.querySelector('img');
-      downloadImage(imageEl, location.href);
+       if(imageEl) {
+        return downloadImage(imageEl, location.href);
+      }
+      const videoEl = theOnlySwipeEl.querySelector('video');
+      if(videoEl) {
+        return downloadVideo(location.href);
+      }
     };
   } else {
     downloadBtnEl.onclick = (event) => {
