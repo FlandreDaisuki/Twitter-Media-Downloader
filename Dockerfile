@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-RUN apk add --no-cache tzdata python3 \
+RUN apk add --no-cache tzdata python3 ffmpeg \
     && mkdir -p /app \
     && apk add --virtual build-deps curl \
     && curl -sL -o /usr/bin/yt-dlp 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp' \
