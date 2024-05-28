@@ -22,7 +22,7 @@ const pipeArgs = (()=>{
 })();
 
 const userscriptJs = (await readFile(path.resolve(APP_ROOT, 'twitter-media-downloader.user.js'), 'utf8'))
-  .replaceAll('__USERSCRIPT_VERSION__', '2.0.0')
+  .replaceAll('__USERSCRIPT_VERSION__', '2.0.1')
   .replaceAll('__USERSCRIPT_HOST_NAME__', '127.0.0.1')
   .replaceAll('__USERSCRIPT_PORT__', String(PORT))
   .replaceAll('__USERSCRIPT_IMAGE_NAMING_PATTERN__', JSON.stringify(IMAGE_NAMING_PATTERN));

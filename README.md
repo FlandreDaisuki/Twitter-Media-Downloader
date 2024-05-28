@@ -53,7 +53,7 @@ twitter-media-downloader  | Destination:
 twitter-media-downloader  |   /download
 twitter-media-downloader  |
 twitter-media-downloader  | Versions:
-twitter-media-downloader  |   yt-dlp: 2024.04.09
+twitter-media-downloader  |   yt-dlp: 2024.05.27
 ```
 
 Copy the userscript url to browser then it will trigger Tampermonkey installation.
