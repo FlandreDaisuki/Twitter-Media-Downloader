@@ -6,7 +6,6 @@
     - [Backend](#backend)
     - [Frontend](#frontend)
   - [Customization](#customization)
-  - [TODO](#todo)
   - [License](#license)
 
 ## Requirement
@@ -82,10 +81,6 @@ services:
       - "/path/to/my/firefox/profile:/firefox-profile:ro"
     command: /app/server.py -- --cookies-from-browser firefox:/firefox-profile
 ```
-
-## TODO
-
-To reduce image size, I think rewrite server by python3, which is a dependency of `yt-dlp`, is a good idea.
 
 ## License
 
