@@ -1,6 +1,6 @@
 services:
   twitter-media-downloader:
-    image: ghcr.io/flandredaisuki/twitter-media-downloader:2.0.1
+    image: ghcr.io/flandredaisuki/twitter-media-downloader:2.1.0
     container_name: twitter-media-downloader
     restart: unless-stopped
     ports:
@@ -12,4 +12,4 @@ services:
       - "IMAGE_NAMING_PATTERN=${IMAGE_NAMING_PATTERN}"
     volumes:
       - "${DOWNLOAD_PATH}:/download"
-    command: /app/server.mjs
+    command: /app/server.py

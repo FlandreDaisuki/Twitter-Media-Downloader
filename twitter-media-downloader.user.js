@@ -48,7 +48,7 @@ const GM_fetch = (url, details = {}) => {
 const dialogEl = document.createElement('dialog');
 dialogEl.id = '🐦💬';
 
-const openDialog = (content, timeout = 3000) => {
+const openDialog = (content, timeout = 10001) => {
   dialogEl.textContent = content;
   dialogEl.setAttribute('open', 'open');
   setTimeout(function dialogAutoClose() {

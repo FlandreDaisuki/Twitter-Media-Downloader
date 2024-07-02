@@ -60,7 +60,7 @@ Copy the userscript url to browser then it will trigger Tampermonkey installatio
 
 ## Customization
 
-If you are familiar with `yt-dlp`, you may want to pass other args. You can use `--` after `/app/server.mjs`.
+If you are familiar with `yt-dlp`, you may want to pass other args. You can use `--` after `/app/server.py`.
 
 e.g.
 
@@ -80,7 +80,7 @@ services:
     volumes:
       - "${DOWNLOAD_PATH}:/download"
       - "/path/to/my/firefox/profile:/firefox-profile:ro"
-    command: /app/server.mjs -- --cookies-from-browser firefox:/firefox-profile
+    command: /app/server.py -- --cookies-from-browser firefox:/firefox-profile
 ```
 
 ## TODO
