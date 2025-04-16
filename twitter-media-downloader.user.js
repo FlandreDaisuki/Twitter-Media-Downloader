@@ -92,6 +92,9 @@ const TWITTER_STYLE_SHEET = `
   position: fixed;
   top: 50%;
   z-index: 301;
+  padding: 1rem;
+  border-radius: 1rem;
+  border-width: 1px;
 }
 .min-width-full {
   min-width: 100%;
