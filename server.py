@@ -24,7 +24,7 @@ def load_userscript() -> str:
 		userscript = f.read()
 
 	replacements = {
-		'__USERSCRIPT_VERSION__': '2.1.1',
+		'__USERSCRIPT_VERSION__': '2.1.2',
 		'__USERSCRIPT_HOST_NAME__': '127.0.0.1',
 		'__USERSCRIPT_PORT__': str(PORT),
 		'__USERSCRIPT_IMAGE_NAMING_PATTERN__': json.dumps(IMAGE_NAMING_PATTERN)
