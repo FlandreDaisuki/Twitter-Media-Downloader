@@ -1,8 +1,8 @@
-ARG ALPINE_TAG=3.22.2
+ARG ALPINE_TAG=3.23.2
 
 FROM alpine:${ALPINE_TAG}
 
-ENV YT_DLP_VER=2025.10.14
+ENV YT_DLP_VER=2025.12.08
 
 RUN apk add --no-cache tzdata python3 ffmpeg \
     && mkdir -p /app \

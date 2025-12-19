@@ -8,6 +8,7 @@
 // @require      https://unpkg.com/winkblue@0.1.0/dist/winkblue.umd.js
 // @license      MIT
 // @noframes
+// @icon         https://abs.twimg.com/favicons/twitter.3.ico
 // @grant        GM_download
 // @grant        GM_xmlhttpRequest
 // @connect      __USERSCRIPT_HOST_NAME__
