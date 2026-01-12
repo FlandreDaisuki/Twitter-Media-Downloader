@@ -43,16 +43,20 @@ twitter-media-downloader  |   Download userscript:
 twitter-media-downloader  |     GET http://0.0.0.0:10001/twitter-media-downloader.user.js
 twitter-media-downloader  |
 twitter-media-downloader  |   Start an async downloading task by twitter video url:
-twitter-media-downloader  |     GET http://0.0.0.0:10001/download?url=https://x.com/{userId}/status/{tweetId}
+twitter-media-downloader  |     GET http://0.0.0.0:10001/download?type=video&url=https://x.com/{userId}/status/{tweetId}
 twitter-media-downloader  |
-twitter-media-downloader  | Video Name:
-twitter-media-downloader  |   {userId}@twitter-{tweetId}.mp4
+twitter-media-downloader  |   Start a waterfall image downloading task by imageId:
+twitter-media-downloader  |     GET http://0.0.0.0:10001/download?type=waterfall-image&url=https://x.com/{userId}/status/{tweetId}&image={imageId}[...&image={imageId}]
 twitter-media-downloader  |
-twitter-media-downloader  | Destination:
-twitter-media-downloader  |   /download
+twitter-media-downloader  |   Video Name:
+twitter-media-downloader  |     {userId}@twitter-{tweetId}.mp4
+twitter-media-downloader  |
+twitter-media-downloader  |   Destination:
+twitter-media-downloader  |     /tmp/twitter-downloaded
 twitter-media-downloader  |
 twitter-media-downloader  | Versions:
-twitter-media-downloader  |   yt-dlp: 2024.05.27
+twitter-media-downloader  |   yt-dlp: 2025.12.08
+twitter-media-downloader  |
 ```
 
 Copy the userscript url to browser then it will trigger Tampermonkey installation.
@@ -70,9 +74,10 @@ services:
     container_name: twitter-media-downloader
     restart: unless-stopped
     ports:
-      - "${PORT:-10001}:10001"
+      - "${PORT:-10001}:${PORT:-10001}"
     environment:
       - "TZ=${TZ}"
+      - "PORT=${PORT:-10001}"
       - "LANG=${LANG}"
       - "VIDEO_NAMING_PATTERN=${VIDEO_NAMING_PATTERN}"
       - "IMAGE_NAMING_PATTERN=${IMAGE_NAMING_PATTERN}"
@@ -86,4 +91,4 @@ services:
 
 The MIT License (MIT)
 
-Copyright (c) 2019-2024 FlandreDaisuki
+Copyright (c) 2019-2026 FlandreDaisuki

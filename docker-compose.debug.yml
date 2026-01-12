@@ -1,14 +1,14 @@
 services:
   twitter-media-downloader:
-    image: ghcr.io/flandredaisuki/twitter-media-downloader:3.0.0
-    container_name: twitter-media-downloader
-    user: "${UID:-1000}:${GID:-1000}"
+    build:
+      context: .
+    container_name: twitter-media-downloader.debug
     restart: unless-stopped
     ports:
-      - "${PORT:-10001}:${PORT:-10001}"
+      - "${PORT:-10003}:${PORT:-10003}"
     environment:
       - "TZ=${TZ}"
-      - "PORT=${PORT:-10001}"
+      - "PORT=${PORT:-10003}"
       - "LANG=${LANG}"
       - "VIDEO_NAMING_PATTERN=${VIDEO_NAMING_PATTERN}"
       - "IMAGE_NAMING_PATTERN=${IMAGE_NAMING_PATTERN}"
