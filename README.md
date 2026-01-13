@@ -79,6 +79,7 @@ services:
   twitter-media-downloader:
     image: ghcr.io/flandredaisuki/twitter-media-downloader
     container_name: twitter-media-downloader
+    user: "${UID:-1000}:${GID:-1000}"
     restart: unless-stopped
     ports:
       - "${PORT:-10001}:${PORT:-10001}"
@@ -88,6 +89,8 @@ services:
       - "LANG=${LANG}"
       - "VIDEO_NAMING_PATTERN=${VIDEO_NAMING_PATTERN}"
       - "IMAGE_NAMING_PATTERN=${IMAGE_NAMING_PATTERN}"
+      - "WATERFALL_IMAGE_NAMING_PATTERN=${WATERFALL_IMAGE_NAMING_PATTERN}"
+      - "HOST_DOWNLOAD_PATH=${DOWNLOAD_PATH}"
     volumes:
       - "${DOWNLOAD_PATH}:/download"
       - "/path/to/my/firefox/profile:/firefox-profile:ro"
