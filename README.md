@@ -5,6 +5,7 @@
   - [Installation](#installation)
     - [Backend](#backend)
     - [Frontend](#frontend)
+      - [The gapless style](#the-gapless-style)
   - [Customization](#customization)
   - [License](#license)
 
@@ -60,6 +61,12 @@ twitter-media-downloader  |
 ```
 
 Copy the userscript url to browser then it will trigger Tampermonkey installation.
+
+#### The gapless style
+
+You can also install the style to make waterfall layout images gapless.
+
+[X Gapless Waterfall Images](https://github.com/FlandreDaisuki/stylus-usercss/blob/master/X%20Gapless%20Waterfall%20Images/README.md)
 
 ## Customization
 
