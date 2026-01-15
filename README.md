@@ -7,6 +7,10 @@
     - [Frontend](#frontend)
       - [The gapless style](#the-gapless-style)
   - [Customization](#customization)
+    - [Naming patterns](#naming-patterns)
+      - [VIDEO\_NAMING\_PATTERN](#video_naming_pattern)
+      - [IMAGE\_NAMING\_PATTERN](#image_naming_pattern)
+      - [COLLAGE\_NAMING\_PATTERN](#collage_naming_pattern)
   - [License](#license)
 
 ## Requirement
@@ -26,8 +30,9 @@ $ git clone git@github.com:FlandreDaisuki/Twitter-Media-Downloader.git
 $ cd Twitter-Media-Downloader
 
 # Modify .env values
-# The most important value is `DOWNLOAD_PATH`
+# The most important value is `DOWNLOAD_DIR`
 # Please fill it with your host download directory in absolute path
+# You can refer patterns on following "Naming patterns" section
 $ mv .env.example .env
 
 $ docker compose up -d
@@ -44,13 +49,14 @@ twitter-media-downloader  |   Download userscript:
 twitter-media-downloader  |     GET http://0.0.0.0:10001/twitter-media-downloader.user.js
 twitter-media-downloader  |
 twitter-media-downloader  |   Start an async downloading task by twitter video url:
-twitter-media-downloader  |     GET http://0.0.0.0:10001/download?type=video&url=https://x.com/{userId}/status/{tweetId}
+twitter-media-downloader  |     GET http://0.0.0.0:10001/api/tasks/create/video?url=https://x.com/{userId}/status/{tweetId}
+twitter-media-downloader  |     GET http://0.0.0.0:10001/api/tasks/create/video?url=https://x.com/{userId}/status/{tweetId}/video/{mediaOrdinal}
 twitter-media-downloader  |
-twitter-media-downloader  |   Start a waterfall image downloading task by imageId:
-twitter-media-downloader  |     GET http://0.0.0.0:10001/download?type=waterfall-image&url=https://x.com/{userId}/status/{tweetId}&image={imageId}[...&image={imageId}]
+twitter-media-downloader  |   Download a collage by imageId:
+twitter-media-downloader  |     GET http://0.0.0.0:10001/api/raw/collage?url=https://x.com/{userId}/status/{tweetId}&image={imageId}[...&image={imageId}]
 twitter-media-downloader  |
 twitter-media-downloader  |   Video Name:
-twitter-media-downloader  |     {userId}@twitter-{tweetId}.mp4
+twitter-media-downloader  |     {userId}@twitter-{tweetId}-{mediaOrdinal}.mp4
 twitter-media-downloader  |
 twitter-media-downloader  |   Destination:
 twitter-media-downloader  |     /tmp/twitter-downloaded
@@ -77,7 +83,7 @@ e.g.
 ```yaml
 services:
   twitter-media-downloader:
-    image: ghcr.io/flandredaisuki/twitter-media-downloader
+    image: ghcr.io/flandredaisuki/twitter-media-downloader:4.0.0
     container_name: twitter-media-downloader
     user: "${UID:-1000}:${GID:-1000}"
     restart: unless-stopped
@@ -89,13 +95,33 @@ services:
       - "LANG=${LANG}"
       - "VIDEO_NAMING_PATTERN=${VIDEO_NAMING_PATTERN}"
       - "IMAGE_NAMING_PATTERN=${IMAGE_NAMING_PATTERN}"
-      - "WATERFALL_IMAGE_NAMING_PATTERN=${WATERFALL_IMAGE_NAMING_PATTERN}"
-      - "HOST_DOWNLOAD_PATH=${DOWNLOAD_PATH}"
+      - "COLLAGE_NAMING_PATTERN=${COLLAGE_NAMING_PATTERN}"
+      - "HOST_DOWNLOAD_DIR=${DOWNLOAD_DIR}"
     volumes:
-      - "${DOWNLOAD_PATH}:/download"
+      - "${DOWNLOAD_DIR}:/download"
       - "/path/to/my/firefox/profile:/firefox-profile:ro"
     command: /app/server.py -- --cookies-from-browser firefox:/firefox-profile
 ```
+
+### Naming patterns
+
+#### VIDEO_NAMING_PATTERN
+
+- `{userId}`
+- `{tweetId}`
+- `{mediaOrdinal}`
+
+#### IMAGE_NAMING_PATTERN
+
+- `{imgId}`
+- `{userId}`
+- `{tweetId}`
+- `{mediaOrdinal}`
+
+#### COLLAGE_NAMING_PATTERN
+
+- `{userId}`
+- `{tweetId}`
 
 ## License
 

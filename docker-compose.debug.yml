@@ -1,19 +1,36 @@
 services:
-  twitter-media-downloader:
+  twitter-media-downloader.debug:
     build:
       context: .
+    develop:
+      watch:
+        - action: rebuild
+          path: ./twitter-media-downloader.user.js
+          target: /app/twitter-media-downloader.user.js
+          initial_sync: true
+        - action: sync+restart
+          path: ./server.py
+          target: /app/server.py
+          initial_sync: true
+        - action: rebuild
+          path: ./.env
     container_name: twitter-media-downloader.debug
     restart: unless-stopped
     ports:
       - "${PORT:-10003}:${PORT:-10003}"
     environment:
       - "TZ=${TZ}"
+      - "PUBLIC_HOST=${PUBLIC_HOST:-127.0.0.1}"
       - "PORT=${PORT:-10003}"
       - "LANG=${LANG}"
       - "VIDEO_NAMING_PATTERN=${VIDEO_NAMING_PATTERN}"
       - "IMAGE_NAMING_PATTERN=${IMAGE_NAMING_PATTERN}"
-      - "WATERFALL_IMAGE_NAMING_PATTERN=${WATERFALL_IMAGE_NAMING_PATTERN}"
-      - "HOST_DOWNLOAD_PATH=${DOWNLOAD_PATH}"
+      - "COLLAGE_NAMING_PATTERN=${COLLAGE_NAMING_PATTERN}"
+      - "HOST_DOWNLOAD_DIR=${DOWNLOAD_DIR}"
+      - "LOG_LEVEL=${LOG_LEVEL}"
     volumes:
-      - "${DOWNLOAD_PATH}:/download"
+      - "${DOWNLOAD_DIR}:/download"
+      - "./debug.sqlite3:/app/db.sqlite3"
     command: /app/server.py
+
+# touch debug.sqlite3 && docker compose -f docker-compose.debug.yml up --build --watch
