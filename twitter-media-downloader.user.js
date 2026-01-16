@@ -11,12 +11,15 @@
 // @icon         https://abs.twimg.com/favicons/twitter.3.ico
 // @grant        GM_download
 // @grant        GM_xmlhttpRequest
+// @grant        unsafeWindow
+// @sandbox      raw
 // @connect      __USERSCRIPT_HOST_NAME__
 // ==/UserScript==
 
 const PORT = __USERSCRIPT_PORT__;
-const IMG_NAMING_PATTERN = __USERSCRIPT_IMAGE_NAMING_PATTERN__;
-const WATERFALL_IMAGE_NAMING_PATTERN = __USERSCRIPT_WATERFALL_IMAGE_NAMING_PATTERN__;
+const VIDEO_NAMING_PATTERN = __USERSCRIPT_VIDEO_NAMING_PATTERN__;
+const IMAGE_NAMING_PATTERN = __USERSCRIPT_IMAGE_NAMING_PATTERN__;
+const COLLAGE_NAMING_PATTERN = __USERSCRIPT_COLLAGE_NAMING_PATTERN__;
 
 /* global Winkblue */
 
@@ -47,72 +50,207 @@ const GM_fetch = (url, details = {}) => {
   });
 };
 
-const dialogEl = document.createElement('dialog');
-dialogEl.id = '🐦💬';
+const notifDialogEl = document.createElement('dialog');
+notifDialogEl.id = '🐦💬';
+document.body.appendChild(notifDialogEl);
 
-const openDialog = (content, timeout = 3000) => {
-  dialogEl.textContent = content;
-  dialogEl.show();
-  setTimeout(() => { dialogEl.close(); }, timeout);
+const notify = (() => {
+  const q = [];
+  /**
+   * @param {string} content
+   * @param {number} [timeout=5000]
+   */
+  return (content, timeout = 5000) => {
+    q.push(content);
+    notifDialogEl.textContent = q.join('\n');
+    notifDialogEl.show();
+
+    setTimeout(() => {
+      q.shift();
+      if(q.length === 0) {
+        notifDialogEl.close();
+      }
+    }, timeout);
+  };
+})();
+
+
+const progressDialogEl = document.createElement('dialog');
+progressDialogEl.id = '🐦⏳';
+document.body.appendChild(progressDialogEl);
+
+
+const updateProgressDialog = (() => {
+  const dm = new Map();
+
+  /**
+   * @param {string} filename
+   * @param {number} progress 0 ≦ v ≦ 100
+   */
+  return (filename, progress) => {
+    if(progress === 100) {
+      dm.delete(filename);
+      notify(`${filename} 下載完成`);
+    } else {
+      dm.set(filename, progress);
+    }
+
+    if(dm.size === 0) {
+      return progressDialogEl.close();
+    }
+
+    const L = Math.max(...Array.from(dm.keys()).map(s => s.length));
+
+    progressDialogEl.textContent = Array.from(dm.entries())
+      .map(([k, v]) => `${k.padStart(L, ' ')}: ${v}%`)
+      .join('\n');
+    progressDialogEl.show();
+  };
+})();
+
+/** @param {HTMLElement} videoPlayerEl */
+const extractVideoDownloadUrl = (videoPlayerEl) => {
+  if (!videoPlayerEl) { return ''; }
+
+  console.debug('videoPlayerEl', videoPlayerEl, Object.keys(videoPlayerEl));
+  const pk = Object.keys(videoPlayerEl).find((k) => /^__reactProps[$]/.test(k));
+  console.debug('videoPlayerEl::pk', pk);
+  const source = videoPlayerEl?.[pk]?.children?._owner?.stateNode?.props?.source;
+  if(!source) { return ''; }
+  console.debug('extractVideoDownloadUrl::source', source);
+  return String(source.downloadLink ?? Array.from(source.variants).at(-1)?.url ?? '');
+}
+unsafeWindow.extractVideoDownloadUrl = extractVideoDownloadUrl;
+
+const parseTweetUrl = (tweetUrl) => {
+  const u = new URL(tweetUrl);
+  const pattern = /^[/](?<userId>[^/]+)[/]status[/](?<tweetId>\d+)(?:[/](?<mediaType>video|photo)[/](?<mediaOrdinal>\d+))?[/]?/;
+  const matched = u.pathname.match(pattern);
+  return {
+    userId: matched?.groups?.userId ?? 'unknown-user',
+    tweetId: matched?.groups?.tweetId ?? 'unknown-tweet',
+    mediaType: matched?.groups?.mediaType ?? null,
+    mediaOrdinal: matched?.groups?.mediaOrdinal ?? '1',
+  }
 };
 
-const requestDownloadVideo = async(currentUrl) => {
+/**
+ * @param {string} tweetImageUrl
+ * @example
+ * https://pbs.twimg.com/media/G-aaaaBBBB12_45?format=jpg&name=small
+ * https://pbs.twimg.com/amplify_video_thumb/2011376805664759808/img/pbj94TnbpOQqoipC.jpg?name=orig
+ */
+const parseTweetImageUrl = (tweetImageUrl) => {
+  const u = new URL(tweetImageUrl);
+
+  const pattern = /^[/]media[/](?<imgId>[^/]+)[/]?/;
+  const matched = u.pathname.match(pattern);
+  return {
+    isVideoPoster: (/^[/]amplify_video_thumb/.test(u.pathname)),
+    imgId: matched?.groups?.imgId ?? crypto.randomUUID(),
+    format: u.searchParams.get('format') ?? 'jpg',
+  }
+};
+
+/**
+ * @param {string} tweetVideoUrl
+ * @example
+ * https://video.twimg.com/amplify_video/0000000000000000000/vid/avc1/1920x1080/gMq0wzNrNRX1heMO.mp4
+ * https://video.twimg.com/amplify_video/0000000000000000000/vid/avc1/1920x1080/aDpM0BxqtoNzcWHe.mp4
+ * https://video.twimg.com/amplify_video/0000000000000000000/vid/avc1/1920x1080/IMrqJjSSAVDKjU67.mp4
+ * https://video.twimg.com/amplify_video/0000000000000000000/vid/avc1/1920x1080/xzvvOb43I-V3Kqv_.mp4
+ */
+const parseTweetVideoUrl = (tweetVideoUrl) => {
+  const u = new URL(tweetVideoUrl);
+  const pattern = /^[/]amplify_video[/](?<videoId>\d+)[/]vid[/](?<codec>[^/]+)[/](?<width>\d+)x(?<height>\d+)[/](?<videoHash>[^.]+)[.](?<ext>\w+)/;
+  const matched = u.pathname.match(pattern);
+  return {
+    videoId: matched?.groups?.videoId ?? '0'.repeat(19),
+    videoHash: matched?.groups?.videoHash ?? crypto.randomUUID().split('-')[0],
+    ext: matched?.groups?.ext ?? 'mp4',
+  }
+};
+
+const requestDownloadVideoTask = async(tweetUrl) => {
   try {
-    const u = new URL(`${SERVER_ORIGIN}/download`);
-    u.searchParams.set('type', 'video');
-    u.searchParams.set('url', currentUrl);
-    const resp = await GM_fetch(u.href);
-    const result = JSON.parse(resp.responseText);
-    if (result.ok) {
-      openDialog('已成功下載 ' + result.dest);
-      console.log('已成功下載', result.dest);
-    } else {
-      openDialog('下載失敗');
-      console.error('下載失敗', result.reason);
+    const u = new URL(`${SERVER_ORIGIN}/api/tasks/create/video`);
+    u.searchParams.set('url', tweetUrl);
+    const taskResp = await GM_fetch(u.href)
+
+    /** @type {{ok: boolean, task_id: number, filename: string}} */
+    const tr = JSON.parse(taskResp.responseText);
+
+    const v = new URL(`${SERVER_ORIGIN}/api/tasks/status`);
+    v.searchParams.set('id', tr.task_id);
+    if(tr.ok) {
+      console.info('遠端處理＋下載影片：', tr.filename);
+      const updateTaskProgress = async() => {
+        const statusResp = await GM_fetch(v.href);
+
+        /**
+         * @typedef {'processing'|'completed'|'failed'} TaskStatus
+         * @type {{ok: boolean, task: {id: number, result_file: string, status: TaskStatus, progress: number}}}
+         */
+        const sr = JSON.parse(statusResp.responseText);
+        if(!sr.ok) {
+          return notify(`${tr.filename} 下載失敗`);
+        }
+
+        updateProgressDialog(sr.task.result_file, sr.task.progress);
+        if(sr.task.progress < 100 && sr.task.status === 'processing') {
+          setTimeout(updateTaskProgress, 2000);
+        }
+      }
+      updateTaskProgress();
     }
   } catch (err) {
     console.error(err);
   }
 };
 
-const requestDownloadWaterfallImages = async(imageIds, tweetURL) => {
+
+const downloadCollage = async(imageIds, tweetUrl) => {
   try {
-    const u = new URL(`${SERVER_ORIGIN}/download`);
-    u.searchParams.set('type', 'waterfall-image');
-    u.searchParams.set('url', tweetURL);
+    const u = new URL(`${SERVER_ORIGIN}/api/raw/collage`);
+    u.searchParams.set('url', tweetUrl);
     for (const imageId of imageIds) {
       u.searchParams.append('image', imageId);
     }
 
-    const [userId, tweetId] = [...tweetURL.matchAll(/.*\/(.*)\/status\/(\d+)(?:\/(?:video|photo)\/(\d+))?/g)][0].slice(1);
-    const filename = WATERFALL_IMAGE_NAMING_PATTERN
-      .replace('{userId}', userId)
-      .replace('{tweetId}', tweetId)
+    const tu = parseTweetUrl(tweetUrl);
+    const filename = COLLAGE_NAMING_PATTERN
+      .replace('{userId}', tu.userId)
+      .replace('{tweetId}', tu.tweetId)
       .concat('.jpg');
 
+    console.info('遠端處理＋下載縱長圖：', filename, imageIds);
     GM_download(u.href, filename);
   } catch (err) {
     console.error(err);
   }
 };
 
-const downloadImage = (imgEl, tweetURL) => {
-  const twimgURL = (() => {
-    const url = new URL(imgEl.src);
-    url.searchParams.set('name', 'orig');
-    return url;
+/**
+ * @param {string} imgSrc
+ * @param {string} tweetUrl
+ */
+const downloadImage = (imgSrc, tweetUrl) => {
+  const origImgSrc = (() => {
+    const u = new URL(imgSrc);
+    u.searchParams.set('name', 'orig');
+    return u.href;
   })();
-  const twimgId = twimgURL.pathname.replace('/media/', '');
-  const [userId, tweetId, imgOrdinal] = [...tweetURL.matchAll(/.*\/(.*)\/status\/(\d+)(?:\/(?:video|photo)\/(\d+))?/g)][0].slice(1);
-  const filename = IMG_NAMING_PATTERN
-    .replace('{twimgId}', twimgId)
-    .replace('{userId}', userId)
-    .replace('{tweetId}', tweetId)
-    .replace('{imgOrdinal}', imgOrdinal)
-    .concat(`.${twimgURL.searchParams.get('format')}`);
+  const tiu = parseTweetImageUrl(origImgSrc)
+  const tu = parseTweetUrl(tweetUrl);
+  const filename = IMAGE_NAMING_PATTERN
+    .replace('{imgId}', tiu.imgId)
+    .replace('{userId}', tu.userId)
+    .replace('{tweetId}', tu.tweetId)
+    .replace('{mediaOrdinal}', tu.mediaOrdinal)
+    .concat(`.${tiu.format}`);
 
-  console.info('下載圖片：', `${filename}`, `${twimgURL}`);
-  GM_download(`${twimgURL}`, `${filename}`);
+  console.info('下載圖片：', filename, origImgSrc);
+  GM_download(origImgSrc, filename);
 };
 
 const TWITTER_STYLE_SHEET = `
@@ -132,13 +270,29 @@ const TWITTER_STYLE_SHEET = `
   --🐦-hover-text-color-rgb: 0 200 200;
 }
 
-#🐦💬 {
+dialog#🐦💬 {
   position: fixed;
   top: 50%;
   z-index: 301;
   padding: 1rem;
   border-radius: 1rem;
   border-width: 1px;
+  font-size: 1.2rem;
+  border: 3px solid white;
+  white-space: pre-line;
+}
+
+dialog#🐦⏳ {
+  position: fixed;
+  left: 16px;
+  bottom: 48px;
+  z-index: 301;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin: 0;
+  border: 1px solid white;
+  white-space: pre-line;
+  font-variant-numeric: tabular-nums;
 }
 
 .min-width-full {
@@ -236,11 +390,6 @@ injectStyleSheet(TWITTER_STYLE_SHEET);
 
 const { winkblue } = Winkblue;
 
-winkblue.on('body', (mainEl) => {
-  mainEl.appendChild(dialogEl);
-  winkblue.off('body');
-});
-
 // tweet with the only video
 winkblue.on('article[role="article"]:has(video)', (articleEl) => {
   if(articleEl.querySelectorAll('video').length !== 1) { return; }
@@ -270,13 +419,10 @@ winkblue.on('article[role="article"]:has(video)', (articleEl) => {
 
   const downloadBtnEl = tweetActionGroupEl.querySelector('.🐦📹🔽');
   downloadBtnEl.onclick = () => {
-    const href = articleEl.querySelector('a[aria-label]')?.href ??
+    const tweetUrl = articleEl.querySelector('a[aria-label]')?.href ??
       articleEl.querySelector('[dir="auto"] > a:not([target])')?.href;
-    if (href) {
-      requestDownloadVideo(href);
-    } else {
-      openDialog('找不到連結');
-    }
+
+    requestDownloadVideoTask(tweetUrl);
   };
 });
 
@@ -318,7 +464,7 @@ winkblue.on('article[role="article"] div[id][aria-labelledby] a[href*="/photo"]:
 
   downloadBtnEl.onclick = (e) => {
     e.preventDefault();
-    downloadImage(imageEl, linkEl.href);
+    downloadImage(imageEl.src, linkEl.href);
   };
 });
 
@@ -357,7 +503,7 @@ winkblue.on('main[role="main"] article[role="article"]:has(.css-175oi2r.r-6koalj
     }
     const imageEls = Array.from(articleEl.querySelectorAll('a[href*="/status/"][href*="/photo/"] img'));
     const imageIds = imageEls.map(imgEl => new URL(imgEl.src).pathname.replace('/media/', ''));
-    requestDownloadWaterfallImages(imageIds, tweetLinkEl.href);
+    downloadCollage(imageIds, tweetLinkEl.href);
   };
 });
 
@@ -391,13 +537,16 @@ winkblue.on('#layers [aria-modal][role="dialog"]:has([aria-label][role="group"])
     downloadBtnEl.onclick = (event) => {
       event.stopPropagation();
 
-      const imageEl = theOnlySwipeEl.querySelector('img');
-       if(imageEl) {
-        return downloadImage(imageEl, location.href);
-      }
-      const videoEl = theOnlySwipeEl.querySelector('video');
-      if(videoEl) {
-        return requestDownloadVideo(location.href);
+      const tu = parseTweetUrl(location.href);
+      if (tu.mediaType === 'video') {
+        requestDownloadVideoTask(location.href);
+      } else if (tu.mediaType === 'photo') {
+        const imageEl = theOnlySwipeEl.querySelector('img');
+        if(imageEl) {
+          return downloadImage(imageEl.src, location.href);
+        }
+      } else {
+        notify('找不到連結');
       }
     };
   } else {
@@ -413,13 +562,18 @@ winkblue.on('#layers [aria-modal][role="dialog"]:has([aria-label][role="group"])
 
       const unitOffset = width / imageListEl.children.length;
       const currentIndex = Math.abs(Math.round(transformOffset / unitOffset));
-      const imageEl = imageListEl.children[currentIndex].querySelector('img');
-      if(imageEl) {
-        return downloadImage(imageEl, location.href);
-      }
-      const videoEl = imageListEl.children[currentIndex].querySelector('video');
-      if(videoEl) {
-        return requestDownloadVideo(location.href);
+      const currentSlide = imageListEl.children[currentIndex];
+
+      const tu = parseTweetUrl(location.href);
+      if (tu.mediaType === 'video') {
+        requestDownloadVideoTask(location.href);
+      } else if (tu.mediaType === 'photo') {
+        const imageEl = currentSlide.querySelector('img');
+        if(imageEl) {
+          return downloadImage(imageEl.src, location.href);
+        }
+      } else {
+        notify('找不到連結');
       }
     };
   }
