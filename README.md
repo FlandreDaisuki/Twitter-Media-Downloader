@@ -85,10 +85,9 @@ services:
   twitter-media-downloader:
     image: ghcr.io/flandredaisuki/twitter-media-downloader:5.0.1
     container_name: twitter-media-downloader
-    user: "${UID:-1000}:${GID:-1000}"
     restart: unless-stopped
     ports:
-      - "${PORT:-10001}:${PORT:-10001}"
+      - "${PORT:-10001}:80"
     environment:
       - "TZ=${TZ}"
       - "PORT=${PORT:-10001}"
