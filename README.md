@@ -83,7 +83,7 @@ e.g.
 ```yaml
 services:
   twitter-media-downloader:
-    image: ghcr.io/flandredaisuki/twitter-media-downloader:4.0.0
+    image: ghcr.io/flandredaisuki/twitter-media-downloader:5.0.1
     container_name: twitter-media-downloader
     user: "${UID:-1000}:${GID:-1000}"
     restart: unless-stopped
