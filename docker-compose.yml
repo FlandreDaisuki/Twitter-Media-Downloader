@@ -4,7 +4,7 @@ services:
     container_name: twitter-media-downloader
     restart: unless-stopped
     ports:
-      - "${PORT:-10001}:${PORT:-10001}"
+      - "${PORT:-10001}:80"
     environment:
       - "TZ=${TZ}"
       - "PUBLIC_HOST=${PUBLIC_HOST:-127.0.0.1}"
