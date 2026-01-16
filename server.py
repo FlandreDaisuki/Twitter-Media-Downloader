@@ -16,7 +16,6 @@ import logging
 import threading
 
 APP_ROOT = Path(__file__).resolve().parent
-HOSTNAME = '0.0.0.0'
 PUBLIC_HOST = os.environ.get('PUBLIC_HOST', '127.0.0.1')
 PORT = int(os.environ.get('PORT', '10001'))
 CACHE_DIR = Path('/cache')
@@ -340,7 +339,9 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
 		query = urllib.parse.parse_qs(parsed_path.query)
 
 		if path == '/health':
-			return self.send_response(200)
+			self.send_response(200)
+			self.end_headers()
+			return
 
 		# Static Files
 		if path == '/twitter-media-downloader.user.js':
@@ -382,21 +383,21 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
 def server_start():
 	yt_dlp_version = subprocess.run(['yt-dlp', '--version'], capture_output=True, text=True).stdout.strip()
 
-	with socketserver.ThreadingTCPServer((HOSTNAME, PORT), RequestHandler) as httpd:
+	with socketserver.ThreadingTCPServer(('0.0.0.0', 80), RequestHandler) as httpd:
 		httpd.allow_reuse_address = True
 
-		print(f"Server running at http://{HOSTNAME}:{PORT}/")
+		print(f"Server running at http://{PUBLIC_HOST}:{PORT}/")
 		print()
 		print(f"Usage:")
 		print(f"  Download userscript:")
-		print(f"    GET http://{HOSTNAME}:{PORT}/twitter-media-downloader.user.js")
+		print(f"    GET http://{PUBLIC_HOST}:{PORT}/twitter-media-downloader.user.js")
 		print()
 		print(f"  Start an async downloading task by twitter video url:")
-		print(f"    GET http://{HOSTNAME}:{PORT}/api/tasks/create/video?url=https://x.com/{{userId}}/status/{{tweetId}}")
-		print(f"    GET http://{HOSTNAME}:{PORT}/api/tasks/create/video?url=https://x.com/{{userId}}/status/{{tweetId}}/video/{{mediaOrdinal}}")
+		print(f"    GET http://{PUBLIC_HOST}:{PORT}/api/tasks/create/video?url=https://x.com/{{userId}}/status/{{tweetId}}")
+		print(f"    GET http://{PUBLIC_HOST}:{PORT}/api/tasks/create/video?url=https://x.com/{{userId}}/status/{{tweetId}}/video/{{mediaOrdinal}}")
 		print()
 		print(f"  Download a collage by imageId:")
-		print(f"    GET http://{HOSTNAME}:{PORT}/api/raw/collage?url=https://x.com/{{userId}}/status/{{tweetId}}&image={{imageId}}[...&image={{imageId}}]")
+		print(f"    GET http://{PUBLIC_HOST}:{PORT}/api/raw/collage?url=https://x.com/{{userId}}/status/{{tweetId}}&image={{imageId}}[...&image={{imageId}}]")
 		print()
 		print(f"  Video Name:")
 		print(f"    {VIDEO_NAMING_PATTERN}.mp4")
