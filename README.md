@@ -83,7 +83,7 @@ e.g.
 ```yaml
 services:
   twitter-media-downloader:
-    image: ghcr.io/flandredaisuki/twitter-media-downloader:5.0.1
+    image: ghcr.io/flandredaisuki/twitter-media-downloader:5.0.2
     container_name: twitter-media-downloader
     restart: unless-stopped
     ports:
