@@ -390,10 +390,18 @@ injectStyleSheet(TWITTER_STYLE_SHEET);
 
 const { winkblue } = Winkblue;
 
-// tweet with the only video
+// Selector notes:
+//   `article[role="article"]`: tweet, including reply tweets
+//   `article[role="article"] div[id][aria-labelledby]`: tweet quoting block
+//   `article[role="article"] [aria-label][role="group"]`: action group block of tweet
+//   `article[role="article"] a[href*="/photo"]:not([href$="/media_tags"]) img`: tweet image attachment
+//   `article[role="article"] a[href$="/media_tags"]`: tweet tag of image attachment
+//   `#layers [aria-modal][role="dialog"]`: gallery dialog
+
+// tweet has the only video
 winkblue.on('article[role="article"]:has(video)', (articleEl) => {
   if(articleEl.querySelectorAll('video').length !== 1) { return; }
-  if(articleEl.querySelectorAll('a[href*="/photo"]:not([href$="/media_tags"])').length > 0) { return; }
+  if(articleEl.querySelectorAll(':scope:not(:has(div[id][aria-labelledby])) a[href*="/photo"]:not([href$="/media_tags"])').length > 0) { return; }
 
   const tweetActionGroupEl = articleEl.querySelector('[role="group"]');
   tweetActionGroupEl.children[3].insertAdjacentHTML('afterend', `
