@@ -575,12 +575,18 @@ winkblue.on('#layers [aria-modal][role="dialog"]:has([aria-label][role="group"])
       const tu = parseTweetUrl(location.href);
       if (tu.mediaType === 'video') {
         requestDownloadVideoTask(location.href);
-      } else if (tu.mediaType === 'photo') {
+      }
+      // gif
+      else if (tu.mediaType === 'photo' && currentSlide.querySelector('video')) {
+        requestDownloadVideoTask(location.href);
+      }
+      else if (tu.mediaType === 'photo') {
         const imageEl = currentSlide.querySelector('img');
         if(imageEl) {
           return downloadImage(imageEl.src, location.href);
         }
-      } else {
+      }
+      else {
         notify('找不到連結');
       }
     };

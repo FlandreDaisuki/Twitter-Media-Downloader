@@ -43,7 +43,7 @@ def load_userscript() -> str:
 		userscript = f.read()
 
 	replacements = {
-		'__USERSCRIPT_VERSION__': '5.0.3',
+		'__USERSCRIPT_VERSION__': '5.0.4',
 		'__USERSCRIPT_HOST_NAME__': PUBLIC_HOST,
 		'__USERSCRIPT_PORT__': str(PORT),
 		'__USERSCRIPT_VIDEO_NAMING_PATTERN__': json.dumps(VIDEO_NAMING_PATTERN),
