@@ -6,10 +6,10 @@
 // @author       FlandreDaisuki
 // @match        https://x.com/*
 // @require      https://unpkg.com/winkblue@0.1.0/dist/winkblue.umd.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js#sha512=csNcFYJniKjJxRWRV1R7fvnXrycHP6qDR21mgz1ZP55xY5d+aHLfo9/FcGDQLfn2IfngbAHd8LdfsagcCqgTcQ==
 // @license      MIT
 // @noframes
 // @icon         https://abs.twimg.com/favicons/twitter.3.ico
-// @grant        GM_download
 // @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
 // @sandbox      raw
@@ -21,7 +21,7 @@ const VIDEO_NAMING_PATTERN = __USERSCRIPT_VIDEO_NAMING_PATTERN__;
 const IMAGE_NAMING_PATTERN = __USERSCRIPT_IMAGE_NAMING_PATTERN__;
 const COLLAGE_NAMING_PATTERN = __USERSCRIPT_COLLAGE_NAMING_PATTERN__;
 
-/* global Winkblue */
+/* global Winkblue saveAs */
 
 const SERVER_ORIGIN = `http://__USERSCRIPT_HOST_NAME__:${PORT}`;
 
@@ -224,7 +224,7 @@ const downloadCollage = async(imageIds, tweetUrl) => {
       .concat('.jpg');
 
     console.info('遠端處理＋下載縱長圖：', filename, imageIds);
-    GM_download(u.href, filename);
+    saveAs(u.href, filename);
   } catch (err) {
     console.error(err);
   }
@@ -250,7 +250,7 @@ const downloadImage = (imgSrc, tweetUrl) => {
     .concat(`.${tiu.format}`);
 
   console.info('下載圖片：', filename, origImgSrc);
-  GM_download(origImgSrc, filename);
+  saveAs(origImgSrc, filename);
 };
 
 const TWITTER_STYLE_SHEET = `
