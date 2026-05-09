@@ -254,7 +254,7 @@ const downloadImage = (imgSrc, tweetUrl) => {
 };
 
 const TWITTER_STYLE_SHEET = `
-:root[data-theme="dark"] {
+:root[data-theme="dark"], :root[style*="color-scheme: dark"] {
   --🐦-text-color: rgb(113, 118, 123);
   --🐦-text-color2: rgb(255, 255, 255);
   --🐦-hover-text-color-rgb: 0 200 200;
@@ -264,7 +264,7 @@ const TWITTER_STYLE_SHEET = `
   --🐦-text-color2: rgb(255, 255, 255);
   --🐦-hover-text-color-rgb: 0 200 200;
 }
-:root[data-theme="light"] {
+:root[data-theme="light"], :root[style*="color-scheme: light"]  {
   --🐦-text-color: rgb(83, 100, 113);
   --🐦-text-color2: rgb(255, 255, 255);
   --🐦-hover-text-color-rgb: 0 200 200;
